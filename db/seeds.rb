@@ -1,46 +1,71 @@
 # frozen_string_literal: true
 
-# Clear existing records
-User.destroy_all
-Employer.destroy_all
-Job.destroy_all
-Event.destroy_all
-Application.destroy_all
-Candidate.destroy_all
-Skill.destroy_all
-CandidateSkill.destroy_all
-Experience.destroy_all
-Education.destroy_all
-Disability.destroy_all
-UserDisability.destroy_all
-EventRegistration.destroy_all
+require 'faker'
+
+# Reset primary key sequences and clear existing records
+ActiveRecord::Base.connection.tables.each do |table|
+  next if table == 'schema_migrations' # Skip schema_migrations table
+
+  # Truncate table to clear all records
+  ActiveRecord::Base.connection.execute("TRUNCATE TABLE #{table} RESTART IDENTITY CASCADE;")
+end
+
+# Define static data for employers and events
+company_names = ['Tech Innovators Inc.', 'Creative Solutions LLC', 'NextGen Technologies', 'BrightFuture Enterprises']
+company_descriptions = [
+  'Leading company in technology solutions and innovation.',
+  'Creative agency specializing in design and development.',
+  'Innovative firm focusing on the future of technology.',
+  'Dynamic enterprise dedicated to shaping the future.'
+]
+industries = ['Technology', 'Design', 'Consulting', 'Education']
+event_names = ['Introduction to Full Stack Web Development', 'Data Science Essentials', 'UX Design Fundamentals', 'Digital Marketing Strategies']
+event_descriptions = [
+  'A comprehensive workshop covering HTML, CSS, JavaScript, and backend technologies.',
+  'An in-depth workshop on data analysis, statistical methods, and machine learning basics.',
+  'A hands-on workshop focusing on user experience design principles, prototyping, and user testing.',
+  'An intensive workshop covering SEO, content marketing, and social media strategies.'
+]
+locations = ['Online', 'San Francisco, CA', 'Chicago, IL', 'New York, NY']
 
 # Create Users
 users = []
-users << User.create!(email: 'alice.smith@example.com', password: 'password', password_confirmation: 'password', phone: '555-1234', address: '123 Elm Street', city: 'Springfield', state: 'IL', zip_code: '62701', country: 'USA', profile_picture: 'alice_profile.png', bio: 'Software developer with 5 years of experience in full stack development.', role: 'candidate')
-users << User.create!(email: 'bob.johnson@example.com', password: 'password', password_confirmation: 'password', phone: '555-5678', address: '456 Oak Avenue', city: 'Springfield', state: 'IL', zip_code: '62701', country: 'USA', profile_picture: 'bob_profile.png', bio: 'Experienced project manager with a focus on Agile methodologies.', role: 'employer')
-users << User.create!(email: 'carol.williams@example.com', password: 'password', password_confirmation: 'password', phone: '555-8765', address: '789 Pine Road', city: 'Springfield', state: 'IL', zip_code: '62701', country: 'USA', profile_picture: 'carol_profile.png', bio: 'UX designer with a passion for creating user-friendly interfaces.', role: 'candidate')
-users << User.create!(email: 'david.brown@example.com', password: 'password', password_confirmation: 'password', phone: '555-4321', address: '101 Maple Street', city: 'Springfield', state: 'IL', zip_code: '62701', country: 'USA', profile_picture: 'david_profile.png', bio: 'Digital marketing expert with experience in SEO and content strategy.', role: 'employer')
+users << User.create!(email: 'alice.smith@example.com', password: 'password', password_confirmation: 'password', phone: Faker::PhoneNumber.phone_number, address: Faker::Address.street_address, city: Faker::Address.city, state: Faker::Address.state_abbr, zip_code: Faker::Address.zip_code, country: 'USA', profile_picture: 'alice_profile.png', bio: Faker::Lorem.sentence, role: 'candidate')
+users << User.create!(email: 'bob.johnson@example.com', password: 'password', password_confirmation: 'password', phone: Faker::PhoneNumber.phone_number, address: Faker::Address.street_address, city: Faker::Address.city, state: Faker::Address.state_abbr, zip_code: Faker::Address.zip_code, country: 'USA', profile_picture: 'bob_profile.png', bio: Faker::Lorem.sentence, role: 'employer')
+users << User.create!(email: 'carol.williams@example.com', password: 'password', password_confirmation: 'password', phone: Faker::PhoneNumber.phone_number, address: Faker::Address.street_address, city: Faker::Address.city, state: Faker::Address.state_abbr, zip_code: Faker::Address.zip_code, country: 'USA', profile_picture: 'carol_profile.png', bio: Faker::Lorem.sentence, role: 'candidate')
+users << User.create!(email: 'david.brown@example.com', password: 'password', password_confirmation: 'password', phone: Faker::PhoneNumber.phone_number, address: Faker::Address.street_address, city: Faker::Address.city, state: Faker::Address.state_abbr, zip_code: Faker::Address.zip_code, country: 'USA', profile_picture: 'david_profile.png', bio: Faker::Lorem.sentence, role: 'employer')
 
 # Create Employers
 employers = []
 users.select { |u| u.role == 'employer' }.each do |user|
-  employers << Employer.create!(user_id: user.id, company_name: 'Tech Innovators Inc.', company_description: 'Leading company in technology solutions and innovation.', website: 'https://techinnovators.com', industry: 'Technology')
+  employers << Employer.create!(
+    user_id: user.id,
+    company_name: company_names.sample,
+    company_description: company_descriptions.sample,
+    website: Faker::Internet.url,
+    industry: industries.sample
+  )
 end
 
 # Create Jobs
 jobs = []
 employers.each do |employer|
-  jobs << Job.create!(employer_id: employer.id, title: 'Full Stack Developer', description: 'Responsible for developing both front-end and back-end components.', location: 'Chicago, IL', requirements: '3+ years experience with JavaScript, Ruby on Rails, and SQL.')
-  jobs << Job.create!(employer_id: employer.id, title: 'Product Manager', description: 'Manage product lifecycle from conception to launch.', location: 'Chicago, IL', requirements: '5+ years experience in project management and Agile methodologies.')
+  jobs << Job.create!(employer_id: employer.id, title: Faker::Job.title, description: Faker::Job.field, location: Faker::Address.city, requirements: Faker::Job.key_skill)
+  jobs << Job.create!(employer_id: employer.id, title: Faker::Job.title, description: Faker::Job.field, location: Faker::Address.city, requirements: Faker::Job.key_skill)
 end
 
 # Create Events
 events = []
-events << Event.create!(employer_id: employers.first.id, name: 'Introduction to Full Stack Web Development', description: 'A comprehensive workshop covering HTML, CSS, JavaScript, and backend technologies.', location: 'Online', start_time: DateTime.new(2024, 8, 10, 9, 0, 0), end_time: DateTime.new(2024, 8, 12, 17, 0, 0))
-events << Event.create!(employer_id: employers.first.id, name: 'Data Science Essentials', description: 'An in-depth workshop on data analysis, statistical methods, and machine learning basics.', location: 'San Francisco, CA', start_time: DateTime.new(2024, 9, 5, 10, 0, 0), end_time: DateTime.new(2024, 9, 7, 16, 0, 0))
-events << Event.create!(employer_id: employers.last.id, name: 'UX Design Fundamentals', description: 'A hands-on workshop focusing on user experience design principles, prototyping, and user testing.', location: 'Chicago, IL', start_time: DateTime.new(2024, 7, 15, 9, 0, 0), end_time: DateTime.new(2024, 7, 17, 17, 0, 0))
-events << Event.create!(employer_id: employers.last.id, name: 'Digital Marketing Strategies', description: 'An intensive workshop covering SEO, content marketing, and social media strategies.', location: 'New York, NY', start_time: DateTime.new(2024, 9, 12, 9, 0, 0), end_time: DateTime.new(2024, 9, 14, 17, 0, 0))
+locations.each do |location|
+  events << Event.create!(
+    employer_id: employers.sample.id,
+    name: event_names.sample,
+    description: event_descriptions.sample,
+    location: location,
+    start_time: Faker::Date.forward(days: 30),
+    end_time: Faker::Date.forward(days: 35)
+  )
+end
 
 # Create Applications
 job_applications = []
@@ -53,7 +78,14 @@ end
 # Create Candidates
 candidates = []
 users.select { |u| u.role == 'candidate' }.each do |user|
-  candidates << Candidate.create!(user_id: user.id, first_name: user.email.split('@').first.capitalize, last_name: 'Doe', resume: 'resume.pdf', date_of_birth: Date.new(1990, 1, 1), languages: 'English, Spanish')
+  candidates << Candidate.create!(
+    user_id: user.id,
+    first_name: Faker::Name.first_name,
+    last_name: Faker::Name.last_name,
+    resume: 'resume.pdf',
+    date_of_birth: Faker::Date.birthday(min_age: 22, max_age: 50),
+    languages: 'English, Spanish' # Assuming candidates speak English and Spanish
+  )
 end
 
 # Create Skills
@@ -74,15 +106,31 @@ end
 # Create Experiences
 experiences = []
 candidates.each do |candidate|
-  experiences << Experience.create!(candidate_id: candidate.id, job_title: 'Junior Developer', company_name: 'Web Solutions LLC', start_date: Date.new(2019, 6, 1), end_date: Date.new(2021, 5, 31), description: 'Worked on web application development using JavaScript and Ruby on Rails.')
-  experiences << Experience.create!(candidate_id: candidate.id, job_title: 'Senior Developer', company_name: 'Tech Innovators Inc.', start_date: Date.new(2021, 6, 1), end_date: Date.new(2023, 7, 31), description: 'Led the development team for multiple full-stack projects.')
+  experiences << Experience.create!(candidate_id: candidate.id, job_title: Faker::Job.title, company_name: Faker::Company.name, start_date: Faker::Date.backward(days: 1000), end_date: Faker::Date.backward(days: 500), description: Faker::Lorem.paragraph)
+  experiences << Experience.create!(candidate_id: candidate.id, job_title: Faker::Job.title, company_name: Faker::Company.name, start_date: Faker::Date.backward(days: 500), end_date: Faker::Date.backward(days: 100), description: Faker::Lorem.paragraph)
 end
 
 # Create Educations
 educations = []
 candidates.each do |candidate|
-  educations << Education.create!(candidate_id: candidate.id, institution_name: 'University of Illinois', degree: 'Bachelor of Science', field_of_study: 'Computer Science', start_date: Date.new(2012, 8, 1), end_date: Date.new(2016, 5, 31), description: 'Focused on software engineering and web development.')
-  educations << Education.create!(candidate_id: candidate.id, institution_name: 'Tech Academy', degree: 'Certificate', field_of_study: 'Full Stack Development', start_date: Date.new(2017, 1, 1), end_date: Date.new(2017, 12, 31), description: 'Completed intensive coding bootcamp covering full stack web development.')
+  educations << Education.create!(
+    candidate_id: candidate.id,
+    institution_name: Faker::University.name,
+    degree: ['Bachelor of Science', 'Master of Science', 'PhD'].sample,
+    field_of_study: ['Computer Science', 'Software Engineering', 'Data Science'].sample,
+    start_date: Faker::Date.backward(days: 2000),
+    end_date: Faker::Date.backward(days: 1000),
+    description: Faker::Lorem.paragraph
+  )
+  educations << Education.create!(
+    candidate_id: candidate.id,
+    institution_name: Faker::University.name,
+    degree: ['Certificate', 'Diploma'].sample,
+    field_of_study: ['Full Stack Development', 'Web Design', 'Digital Marketing'].sample,
+    start_date: Faker::Date.backward(days: 1500),
+    end_date: Faker::Date.backward(days: 500),
+    description: Faker::Lorem.paragraph
+  )
 end
 
 # Create Disabilities
