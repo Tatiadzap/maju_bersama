@@ -9,9 +9,12 @@ class User < ApplicationRecord
   validates :password, length: { minimum: 6 }, if: -> { new_record? || changes[:encrypted_password] }
 
   # Associations
-  has_many :candidates, dependent: :destroy
-  has_many :employers, dependent: :destroy
+  has_one :candidate, dependent: :destroy
+  has_one :employer, dependent: :destroy
   has_many :applications, dependent: :destroy
+  has_many :jobs, through: :applications
+  has_many :event_registrations, dependent: :destroy
+  has_many :jobs, through: :event_registrations
   has_many :user_disabilities, dependent: :destroy
 
   # Optional: Add additional validations or associations as needed
