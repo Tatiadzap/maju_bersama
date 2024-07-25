@@ -11,8 +11,8 @@ class User < ApplicationRecord
   # Associations
   has_one :candidate, dependent: :destroy
   has_one :employer, dependent: :destroy
-  has_many :applications, dependent: :destroy
-  has_many :jobs, through: :applications
+  has_many :job_applications, dependent: :destroy
+  has_many :jobs, through: :job_applications
   has_many :event_registrations, dependent: :destroy
   has_many :jobs, through: :event_registrations
   has_many :user_disabilities, dependent: :destroy
