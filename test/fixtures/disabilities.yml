@@ -1,0 +1,9 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  disability_name: MyString
+  description: MyText
+
+two:
+  disability_name: MyString
+  description: MyText
