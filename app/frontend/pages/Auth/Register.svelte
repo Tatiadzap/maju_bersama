@@ -1,7 +1,3 @@
-<svelte:head>
-  <title>Sign Up</title>
-</svelte:head>
-
 <script lang="ts">
   import { useForm } from '@inertiajs/svelte';
   import * as Tabs from "$lib/components/ui/tabs/index.js";
@@ -12,21 +8,22 @@
 
   let form = useForm({
     user: {
-      first_name: null,
-      last_name: null,
       email: null,
       password: null,
       password_confirmation: null,
       role: 'candidate',  // Default to candidate
+      first_name: null,  // Optional field
+      last_name: null,  // Optional field
     }
   });
 
   function selectRole(role: string) {
     $form.user.role = role;  // Update role based on tab selection
-    console.log($form.user.role)
+    console.log("Role selected:", $form.user.role);
   }
 
   function submit() {
+    console.log("Submitting form with role:", $form.user.role);
     $form.post('/sign_up');
   }
 </script>
@@ -44,20 +41,22 @@
           <Card.Description>Fill in the details below to create a new account.</Card.Description>
         </Card.Header>
         <Card.Content class="space-y-4">
-          <div class="space-y-2">
-            <Label for="first_name">First Name</Label>
-            <Input id="first_name" type="text" bind:value={$form.user.first_name} placeholder="First Name" required />
-            {#if $form.errors.user?.first_name}
-              <div class="text-red-500 form-error">{$form.errors.user.first_name}</div>
-            {/if}
-          </div>
-          <div class="space-y-2">
-            <Label for="last_name">Last Name</Label>
-            <Input id="last_name" type="text" bind:value={$form.user.last_name} placeholder="Last Name" required />
-            {#if $form.errors.user?.last_name}
-              <div class="text-red-500 form-error">{$form.errors.user.last_name}</div>
-            {/if}
-          </div>
+          {#if $form.user.role === 'candidate'}
+            <div class="space-y-2">
+              <Label for="first_name">First Name</Label>
+              <Input id="first_name" type="text" bind:value={$form.user.first_name} placeholder="First Name" required />
+              {#if $form.errors.user?.first_name}
+                <div class="text-red-500 form-error">{$form.errors.user.first_name}</div>
+              {/if}
+            </div>
+            <div class="space-y-2">
+              <Label for="last_name">Last Name</Label>
+              <Input id="last_name" type="text" bind:value={$form.user.last_name} placeholder="Last Name" required />
+              {#if $form.errors.user?.last_name}
+                <div class="text-red-500 form-error">{$form.errors.user.last_name}</div>
+              {/if}
+            </div>
+          {/if}
           <div class="space-y-2">
             <Label for="email">Email</Label>
             <Input id="email" type="email" bind:value={$form.user.email} placeholder="Email" required />
