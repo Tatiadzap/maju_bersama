@@ -5,7 +5,7 @@ class Candidate < ApplicationRecord
   has_many :educations
   has_many :experiences
 
-  validates :first_name, :last_name, :date_of_birth, presence: true
+  validates :first_name, :last_name, presence: true
 
   # Other validations and methods
 end
