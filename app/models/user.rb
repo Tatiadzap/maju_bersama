@@ -15,4 +15,6 @@ class User < ApplicationRecord
   has_many :user_disabilities, dependent: :destroy
 
   # Optional: Add additional validations or associations as needed
+  #
+  enum role: { candidate: 'candidate', employer: 'employer', admin: 'admin' }
 end
