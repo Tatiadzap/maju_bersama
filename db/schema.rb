@@ -10,20 +10,9 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_07_25_040526) do
+ActiveRecord::Schema[7.1].define(version: 2024_07_25_121124) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
-
-  create_table "applications", force: :cascade do |t|
-    t.bigint "user_id", null: false
-    t.bigint "job_id", null: false
-    t.string "status"
-    t.datetime "applied_at"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["job_id"], name: "index_applications_on_job_id"
-    t.index ["user_id"], name: "index_applications_on_user_id"
-  end
 
   create_table "candidate_skills", force: :cascade do |t|
     t.bigint "candidate_id", null: false
@@ -111,6 +100,17 @@ ActiveRecord::Schema[7.1].define(version: 2024_07_25_040526) do
     t.index ["candidate_id"], name: "index_experiences_on_candidate_id"
   end
 
+  create_table "job_applications", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.bigint "job_id", null: false
+    t.string "status"
+    t.datetime "applied_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["job_id"], name: "index_job_applications_on_job_id"
+    t.index ["user_id"], name: "index_job_applications_on_user_id"
+  end
+
   create_table "jobs", force: :cascade do |t|
     t.bigint "employer_id", null: false
     t.string "title"
@@ -160,8 +160,6 @@ ActiveRecord::Schema[7.1].define(version: 2024_07_25_040526) do
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end
 
-  add_foreign_key "applications", "jobs"
-  add_foreign_key "applications", "users"
   add_foreign_key "candidate_skills", "candidates"
   add_foreign_key "candidate_skills", "skills"
   add_foreign_key "candidates", "users"
@@ -171,6 +169,8 @@ ActiveRecord::Schema[7.1].define(version: 2024_07_25_040526) do
   add_foreign_key "event_registrations", "users"
   add_foreign_key "events", "employers"
   add_foreign_key "experiences", "candidates"
+  add_foreign_key "job_applications", "jobs"
+  add_foreign_key "job_applications", "users"
   add_foreign_key "jobs", "employers"
   add_foreign_key "user_disabilities", "disabilities"
   add_foreign_key "user_disabilities", "users"

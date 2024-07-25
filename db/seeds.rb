@@ -43,10 +43,10 @@ events << Event.create!(employer_id: employers.last.id, name: 'UX Design Fundame
 events << Event.create!(employer_id: employers.last.id, name: 'Digital Marketing Strategies', description: 'An intensive workshop covering SEO, content marketing, and social media strategies.', location: 'New York, NY', start_time: DateTime.new(2024, 9, 12, 9, 0, 0), end_time: DateTime.new(2024, 9, 14, 17, 0, 0))
 
 # Create Applications
-applications = []
+job_applications = []
 users.select { |u| u.role == 'candidate' }.each do |user|
   jobs.sample(2).each do |job|
-    applications << Application.create!(user_id: user.id, job_id: job.id, status: 'Applied', applied_at: DateTime.now)
+    job_applications << JobApplication.create!(user_id: user.id, job_id: job.id, status: 'Applied', applied_at: DateTime.now)
   end
 end
 
