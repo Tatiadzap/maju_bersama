@@ -16,6 +16,7 @@ class JobsController < ApplicationController
   end
 
   def show
+    fetch_employer
   end
 
   # def new
@@ -56,4 +57,9 @@ class JobsController < ApplicationController
   # def event_params
   #   params.fetch(:job, {}).permit(:title, :description, :start_date)
   # end
+  #
+  def fetch_employer
+    @employer = Employer.find(@job.employer_id)
+    @company_details = @employer.user
+  end
 end
