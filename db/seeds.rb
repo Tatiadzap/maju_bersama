@@ -1,6 +1,20 @@
-# frozen_string_literal: true
-
+# db/seeds.rb
 require 'faker'
+
+# Clear existing data
+User.destroy_all
+Employer.destroy_all
+Candidate.destroy_all
+Job.destroy_all
+Event.destroy_all
+JobApplication.destroy_all
+EventRegistration.destroy_all
+Disability.destroy_all
+Experience.destroy_all
+Education.destroy_all
+Skill.destroy_all
+CandidateSkill.destroy_all
+UserDisability.destroy_all
 
 # Reset primary key sequences and clear existing records
 ActiveRecord::Base.connection.tables.each do |table|
@@ -10,149 +24,188 @@ ActiveRecord::Base.connection.tables.each do |table|
   ActiveRecord::Base.connection.execute("TRUNCATE TABLE #{table} RESTART IDENTITY CASCADE;")
 end
 
-# Define static data for employers and events
-company_names = ['Tech Innovators Inc.', 'Creative Solutions LLC', 'NextGen Technologies', 'BrightFuture Enterprises']
-company_descriptions = [
-  'Leading company in technology solutions and innovation.',
-  'Creative agency specializing in design and development.',
-  'Innovative firm focusing on the future of technology.',
-  'Dynamic enterprise dedicated to shaping the future.'
-]
-industries = ['Technology', 'Design', 'Consulting', 'Education']
-event_names = ['Introduction to Full Stack Web Development', 'Data Science Essentials', 'UX Design Fundamentals', 'Digital Marketing Strategies']
-event_descriptions = [
-  'A comprehensive workshop covering HTML, CSS, JavaScript, and backend technologies.',
-  'An in-depth workshop on data analysis, statistical methods, and machine learning basics.',
-  'A hands-on workshop focusing on user experience design principles, prototyping, and user testing.',
-  'An intensive workshop covering SEO, content marketing, and social media strategies.'
-]
-locations = ['Online', 'San Francisco, CA', 'Chicago, IL', 'New York, NY']
-
-# Create Users
+# Create 20 users
+puts "Creating users"
 users = []
-users << User.create!(email: 'alice.smith@example.com', password: 'password', password_confirmation: 'password', phone: Faker::PhoneNumber.phone_number, address: Faker::Address.street_address, city: Faker::Address.city, state: Faker::Address.state_abbr, zip_code: Faker::Address.zip_code, country: 'USA', profile_picture: 'alice_profile.png', bio: Faker::Lorem.sentence, role: 'candidate')
-users << User.create!(email: 'bob.johnson@example.com', password: 'password', password_confirmation: 'password', phone: Faker::PhoneNumber.phone_number, address: Faker::Address.street_address, city: Faker::Address.city, state: Faker::Address.state_abbr, zip_code: Faker::Address.zip_code, country: 'USA', profile_picture: 'bob_profile.png', bio: Faker::Lorem.sentence, role: 'employer')
-users << User.create!(email: 'carol.williams@example.com', password: 'password', password_confirmation: 'password', phone: Faker::PhoneNumber.phone_number, address: Faker::Address.street_address, city: Faker::Address.city, state: Faker::Address.state_abbr, zip_code: Faker::Address.zip_code, country: 'USA', profile_picture: 'carol_profile.png', bio: Faker::Lorem.sentence, role: 'candidate')
-users << User.create!(email: 'david.brown@example.com', password: 'password', password_confirmation: 'password', phone: Faker::PhoneNumber.phone_number, address: Faker::Address.street_address, city: Faker::Address.city, state: Faker::Address.state_abbr, zip_code: Faker::Address.zip_code, country: 'USA', profile_picture: 'david_profile.png', bio: Faker::Lorem.sentence, role: 'employer')
+5.times do
+  users << User.create!(
+    email: Faker::Internet.unique.email,
+    password: Faker::Internet.password(min_length: 10),
+    admin: false,
+    phone: Faker::PhoneNumber.cell_phone_in_e164,
+    address: Faker::Address.street_address,
+    city: Faker::Address.city,
+    state: Faker::Address.state,
+    zip_code: Faker::Address.zip_code,
+    country: 'United States',
+    profile_picture: Faker::Avatar.image,
+    bio: Faker::Quote.most_interesting_man_in_the_world,
+    role: 'employer'
+  )
+end
 
-# Create Employers
+15.times do
+  users << User.create!(
+    email: Faker::Internet.unique.email,
+    password: Faker::Internet.password(min_length: 10),
+    admin: false,
+    phone: Faker::PhoneNumber.cell_phone_in_e164,
+    address: Faker::Address.street_address,
+    city: Faker::Address.city,
+    state: Faker::Address.state,
+    zip_code: Faker::Address.zip_code,
+    country: ['United States', 'Indonesia'].sample,
+    profile_picture: Faker::Avatar.image,
+    bio: Faker::Quote.most_interesting_man_in_the_world,
+    role: 'candidate'
+  )
+end
+
+# Create employers and candidates
 employers = []
-users.select { |u| u.role == 'employer' }.each do |user|
-  employers << Employer.create!(
-    user_id: user.id,
-    company_name: company_names.sample,
-    company_description: company_descriptions.sample,
-    website: Faker::Internet.url,
-    industry: industries.sample
-  )
-end
-
-# Create Jobs
-jobs = []
-employers.each do |employer|
-  jobs << Job.create!(employer_id: employer.id, title: Faker::Job.title, description: Faker::Job.field, location: Faker::Address.city, requirements: Faker::Job.key_skill)
-  jobs << Job.create!(employer_id: employer.id, title: Faker::Job.title, description: Faker::Job.field, location: Faker::Address.city, requirements: Faker::Job.key_skill)
-end
-
-# Create Events
-events = []
-locations.each do |location|
-  events << Event.create!(
-    employer_id: employers.sample.id,
-    name: event_names.sample,
-    description: event_descriptions.sample,
-    location: location,
-    start_time: Faker::Date.forward(days: 30),
-    end_time: Faker::Date.forward(days: 35)
-  )
-end
-
-# Create Applications
-job_applications = []
-users.select { |u| u.role == 'candidate' }.each do |user|
-  jobs.sample(2).each do |job|
-    job_applications << JobApplication.create!(user_id: user.id, job_id: job.id, status: 'Applied', applied_at: DateTime.now)
-  end
-end
-
-# Create Candidates
 candidates = []
-users.select { |u| u.role == 'candidate' }.each do |user|
-  candidates << Candidate.create!(
-    user_id: user.id,
-    first_name: Faker::Name.first_name,
-    last_name: Faker::Name.last_name,
-    resume: 'resume.pdf',
-    date_of_birth: Faker::Date.birthday(min_age: 22, max_age: 50),
-    languages: 'English, Spanish' # Assuming candidates speak English and Spanish
-  )
-end
 
-# Create Skills
-skills = []
-skills << Skill.create!(skill_name: 'JavaScript')
-skills << Skill.create!(skill_name: 'Ruby on Rails')
-skills << Skill.create!(skill_name: 'Project Management')
-skills << Skill.create!(skill_name: 'UX Design')
-skills << Skill.create!(skill_name: 'SEO')
+puts "Assigning candidates and employers"
 
-# Associate Skills with Candidates
-candidates.each do |candidate|
-  skills.sample(3).each do |skill|
-    CandidateSkill.create!(candidate_id: candidate.id, skill_id: skill.id)
+users.each do |user|
+  if user.role == 'employer'
+    employers << Employer.create!(
+      user_id: user.id,
+      company_name: Faker::Company.name,
+      company_description: Faker::Company.industry,
+      website: Faker::Internet.url,
+      industry: Faker::Company.industry
+    )
+  else
+    candidates << Candidate.create!(
+      user_id: user.id,
+      first_name: Faker::Name.first_name,
+      last_name: Faker::Name.last_name,
+      resume: Faker::Internet.url,
+      date_of_birth: Faker::Date.birthday(min_age: 22, max_age: 60),
+      languages: [Faker::Nation.language, Faker::Nation.language].uniq
+    )
   end
 end
 
-# Create Experiences
-experiences = []
-candidates.each do |candidate|
-  experiences << Experience.create!(candidate_id: candidate.id, job_title: Faker::Job.title, company_name: Faker::Company.name, start_date: Faker::Date.backward(days: 1000), end_date: Faker::Date.backward(days: 500), description: Faker::Lorem.paragraph)
-  experiences << Experience.create!(candidate_id: candidate.id, job_title: Faker::Job.title, company_name: Faker::Company.name, start_date: Faker::Date.backward(days: 500), end_date: Faker::Date.backward(days: 100), description: Faker::Lorem.paragraph)
+puts "Posting jobs"
+
+# Create jobs
+employers.each do |employer|
+  5.times do
+    Job.create!(
+      employer_id: employer.id,
+      title: Faker::Job.title,
+      description: Faker::Job.field,
+      location: Faker::Address.city,
+      requirements: Faker::Lorem.sentence,
+      status: 'Open'
+    )
+  end
 end
 
-# Create Educations
-educations = []
+puts "Hosting events"
+
+# Create events
+employers.each do |employer|
+  5.times do
+    Event.create!(
+      employer_id: employer.id,
+      name: Faker::Marketing.buzzwords,
+      description: Faker::Lorem.paragraph,
+      location: Faker::Address.city,
+      start_time: Faker::Time.forward(days: 30, period: :morning),
+      end_time: Faker::Time.forward(days: 30, period: :evening)
+    )
+  end
+end
+
+puts "Generating skills"
+
+# Create skills
+skills = []
+20.times do
+  skills << Skill.create!(skill_name: Faker::Job.key_skill)
+end
+
+puts "Indexing disabilities"
+
+
+disability_names = [
+  "Blindness",
+  "Deafness",
+  "Mobility Impairment",
+  "Cognitive Disability",
+  "Speech Impairment",
+  "Mental Health Condition",
+  "Chronic Illness",
+  "Learning Disability",
+  "Intellectual Disability",
+]
+
+# Create disabilities
+disabilities = disability_names.map do |name|
+  Disability.create!(
+    disability_name: name,
+    description: Faker::Lorem.sentence # Use Faker for descriptions
+  )
+end
+
+puts "Experiences, schools and skills"
+
+# Create experiences, educations, and candidate skills
 candidates.each do |candidate|
-  educations << Education.create!(
+  3.times do
+    Experience.create!(
+      candidate_id: candidate.id,
+      job_title: Faker::Job.title,
+      company_name: Faker::Company.name,
+      start_date: Faker::Date.backward(days: 1000),
+      end_date: Faker::Date.backward(days: 200),
+      description: Faker::Lorem.paragraph
+    )
+  end
+
+  Education.create!(
     candidate_id: candidate.id,
-    institution_name: Faker::University.name,
-    degree: ['Bachelor of Science', 'Master of Science', 'PhD'].sample,
-    field_of_study: ['Computer Science', 'Software Engineering', 'Data Science'].sample,
+    institution_name: Faker::Educator.university,
+    degree: Faker::Educator.degree,
+    field_of_study: Faker::Educator.subject,
     start_date: Faker::Date.backward(days: 2000),
     end_date: Faker::Date.backward(days: 1000),
     description: Faker::Lorem.paragraph
   )
-  educations << Education.create!(
-    candidate_id: candidate.id,
-    institution_name: Faker::University.name,
-    degree: ['Certificate', 'Diploma'].sample,
-    field_of_study: ['Full Stack Development', 'Web Design', 'Digital Marketing'].sample,
-    start_date: Faker::Date.backward(days: 1500),
-    end_date: Faker::Date.backward(days: 500),
-    description: Faker::Lorem.paragraph
+
+  2.times do
+    CandidateSkill.create!(
+      candidate_id: candidate.id,
+      skill_id: skills.sample.id
+    )
+  end
+
+  UserDisability.create!(
+    user_id: candidate.user_id,
+    disability_id: disabilities.sample.id,
+    details: Faker::Lorem.sentence
   )
 end
 
-# Create Disabilities
-disabilities = []
-disabilities << Disability.create!(disability_name: 'Blindness', description: 'Complete loss of vision.')
-disabilities << Disability.create!(disability_name: 'Deafness', description: 'Complete loss of hearing.')
-disabilities << Disability.create!(disability_name: 'Color Blindness', description: 'Difficulty distinguishing between certain colors.')
-disabilities << Disability.create!(disability_name: 'Mobility Impairment', description: 'Limited ability to move or perform physical tasks.')
-
-# Associate Disabilities with Users
-users.select { |u| u.role == 'candidate' }.each do |user|
-  disabilities.sample(1).each do |disability|
-    UserDisability.create!(user_id: user.id, disability_id: disability.id, details: 'Has accommodations and tools in place to assist with disability.')
+# Create job applications and event registrations
+candidates.each do |candidate|
+  2.times do
+    JobApplication.create!(
+      user_id: candidate.user_id,
+      job_id: Job.all.sample.id,
+      status: ['Applied', 'Interviewing', 'Hired'].sample,
+      applied_at: Faker::Date.backward(days: 100)
+    )
   end
+
+  EventRegistration.create!(
+    user_id: candidate.user_id,
+    event_id: Event.all.sample.id,
+    registered_at: Faker::Date.backward(days: 100)
+  )
 end
 
-# Create Event Registrations
-event_registrations = []
-users.select { |u| u.role == 'candidate' }.each do |user|
-  events.sample(2).each do |event|
-    EventRegistration.create!(user_id: user.id, event_id: event.id, registered_at: DateTime.now)
-  end
-end
-
-puts "Seed data created successfully!"
+puts "Seeding db complete"
