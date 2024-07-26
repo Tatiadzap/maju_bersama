@@ -21,7 +21,7 @@
 </script>
 
 <Card class="p-6 mb-4 border-none shadow-none">
-  <div style="width: 100px height: auto">
+  <div>
     <Avatar.Root>
       <Avatar.Image src="https://github.com/shadcn.png" alt="@shadcn"/>
       <Avatar.Fallback>{candidate.first_name}</Avatar.Fallback>
@@ -35,7 +35,7 @@
   </div>
 </Card>
 
-<Card class="p-6 mb-4 bg-white border-none shadow-none">
+<Card class="p-6 mb-4 border-none shadow-none">
   <div>
     <h1 class="mb-4 text-lg font-bold">Bio</h1>
     <h2 class="">{user.bio}</h2>
@@ -56,7 +56,6 @@
     {/if}
   {/each}
 </Card>
-
 
 <Card class="p-6 mb-4 border-none shadow-none">
   <h1 class="text-lg font-bold">Education</h1>
