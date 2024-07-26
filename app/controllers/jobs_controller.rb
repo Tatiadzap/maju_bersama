@@ -3,15 +3,15 @@ class JobsController < ApplicationController
   before_action :set_event, only: %i[ show ]
 
   def index
-    @events = Job.all
+    @jobs = Jobs.all
   end
 
   def show
   end
 
-  def new
-    @job = Job.new
-  end
+  # def new
+  #   @job = Job.new
+  # end
 
   # def create
   #   job = Job.new(event_params)
