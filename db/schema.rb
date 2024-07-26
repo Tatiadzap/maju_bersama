@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_07_25_121124) do
+ActiveRecord::Schema[7.1].define(version: 2024_07_26_051823) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -29,7 +29,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_07_25_121124) do
     t.string "last_name"
     t.string "resume"
     t.date "date_of_birth"
-    t.text "languages"
+    t.text "languages", default: [], array: true
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["user_id"], name: "index_candidates_on_user_id"
