@@ -14,9 +14,9 @@
 {job.status}
 {job.updated_at}
 {job.status}
-
-
 {job.description}
+{job.requirements}
+
 
 
 <!-- {company_details} -->
