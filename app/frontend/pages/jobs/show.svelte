@@ -7,8 +7,16 @@
   // export let company_details
 </script>
 
+<img src="{company_details.profile_picture}" alt="">
 {job.title}
 {employer.company_name}
-<img src="{company_details.profile_picture}" alt="">
+{job.location}
+{job.status}
+{job.updated_at}
+{job.status}
+
+
+{job.description}
+
 
 <!-- {company_details} -->
