@@ -3,7 +3,16 @@ class JobsController < ApplicationController
   before_action :set_event, only: %i[ show ]
 
   def index
-    @jobs = Jobs.all
+    @jobs = Job.includes(employer: :user).all.as_json(
+      include: {
+        employer: {
+          only: [:id, :company_name],
+          include: {
+            user: { only: [:id, :profile_picture] } # Adjust the attributes to include as necessary
+          }
+        }
+      }
+    )
   end
 
   def show
