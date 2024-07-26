@@ -30,11 +30,11 @@ class CandidatesController < ApplicationController
   end
 
   def fetch_experience
-    @experiences = Experience.where(candidate: @candidate)
+    @experiences = Experience.where(candidate: @candidate).order(end_date: :desc)
   end
 
   def fetch_education
-    @educations = Education.where(candidate: @candidate)
+    @educations = Education.where(candidate: @candidate).order(end_date: :desc)
   end
 
   # def candidate_params
