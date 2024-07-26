@@ -17,6 +17,8 @@ class JobsController < ApplicationController
 
   def show
     fetch_employer
+    fetch_employer_logo
+    raise
   end
 
   # def new
@@ -60,5 +62,9 @@ class JobsController < ApplicationController
   #
   def fetch_employer
     @employer = Employer.find(@job.employer_id)
+  end
+
+  def fetch_employer_logo
+    @company_logo = @employer.user.profile_picture
   end
 end
