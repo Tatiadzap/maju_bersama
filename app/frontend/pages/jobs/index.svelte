@@ -25,16 +25,21 @@
       if (response.ok) {
         toast.success(`Applied to ${jobTitle} at ${companyName}!`, {
           action: {
-            label: "Undo",
-            onClick: () => console.info("Undo")
+            label: "",
+            onClick: async () => {
+              // You can implement undo functionality here if needed
+              console.info("Undo");
+            }
           }
         });
+        console.log('Applied to job successfully')
       } else {
         const errorData = await response.json();
         toast.error(`Failed to apply: ${errorData.errors.join(", ")}`);
       }
     } catch (error) {
       toast.error(`An error occurred: ${error.message}`);
+      console.log("Couldn't apply to job")
     }
   }
 </script>
@@ -71,14 +76,8 @@
             <Button
               class="self-center"
               on:click={() =>
-                toast.success(`Applied to ${job.title} at ${job.employer.company_name}!`, {
-                  // description: "Sunday, December 03, 2023 at 9:00 AM",
-                  action: {
-                    label: "Undo",
-                    onClick: () => console.info("Undo")
-                  }
-                })}
-            >
+                applyForJob(job.id, job.title, job.employer.company_name)}
+              >
               Apply
             </Button>
           </Card.Footer>
