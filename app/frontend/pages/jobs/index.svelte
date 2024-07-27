@@ -1,5 +1,5 @@
 <script lang="ts">
-
+  import { toast } from "svelte-sonner";
   import { Button } from "$lib/components/ui/button/index.js";
   import * as Card from "$lib/components/ui/card/index.js";
   import * as Avatar from "$lib/components/ui/avatar";
@@ -7,6 +7,41 @@
   export let jobs;
   // Log the jobs array to check its structure
   // console.log('Jobs:', jobs[0].employer.user.profile_picture);
+  async function applyForJob(jobId, jobTitle, companyName) {
+    try {
+      const response = await fetch("/job_applications", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-CSRF-Token": document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+        },
+        body: JSON.stringify({
+          job_application: {
+            job_id: jobId
+          }
+        })
+      });
+
+      if (response.ok) {
+        toast.success(`Applied to ${jobTitle} at ${companyName}!`, {
+          action: {
+            label: "",
+            onClick: async () => {
+              // You can implement undo functionality here if needed
+              console.info("Undo");
+            }
+          }
+        });
+        console.log('Applied to job successfully')
+      } else {
+        const errorData = await response.json();
+        toast.error(`Failed to apply: ${errorData.errors.join(", ")}`);
+      }
+    } catch (error) {
+      toast.error(`An error occurred: ${error.message}`);
+      console.log("Couldn't apply to job")
+    }
+  }
 </script>
 
 <!-- {#each jobs as job}
@@ -37,8 +72,14 @@
           </Card.Header>
           <!-- Card Footer -->
           <Card.Footer class="flex justify-end pb-4 border-gray-200">
-            <Button variant="outline" class="mr-2">More Details</Button>
-            <Button>Apply Now</Button>
+            <Button href={`/jobs/${job.id}`} variant="outline" class="mr-2">More Details</Button>
+            <Button
+              class="self-center"
+              on:click={() =>
+                applyForJob(job.id, job.title, job.employer.company_name)}
+              >
+              Apply
+            </Button>
           </Card.Footer>
         </div>
     </Card.Root>
