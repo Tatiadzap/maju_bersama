@@ -1,5 +1,9 @@
 <script>
   import { onMount } from 'svelte';
+  import { Button } from "$lib/components/ui/button"
+  import { toast } from "svelte-sonner";
+
+
 
   let canvas;
 
@@ -51,6 +55,8 @@
     <p class="font-thin text-gray-700">My first Svelte component</p>
   </div>
 </div>
+
+<Button on:click={() => toast("Hello world")}>Show toast</Button>
 
 <style>
     canvas {
