@@ -5,6 +5,21 @@
   import * as Avatar from "$lib/components/ui/avatar";
 
   export let jobs;
+
+  // Local state to track applied jobs
+  let appliedJobs = {};
+
+  // Initialize appliedJobs state based on the data from the server
+  $: jobs.forEach(job => {
+    appliedJobs[job.id] = job.applied_by_current_user;
+  });
+
+  async function handleApply(job) {
+    const success = await applyForJob(job.id, job.title, job.employer.company_name);
+    if (success) {
+      appliedJobs = { ...appliedJobs, [job.id]: true };
+    }
+  }
 </script>
 
 <h1 class="mx-auto my-24 text-5xl text-center">Discover the <span class="text-red-500">Best Jobs</span></h1>
@@ -32,10 +47,11 @@
           <Card.Footer class="flex justify-end pb-4 border-gray-200">
             <Button href={`/jobs/${job.id}`} variant="outline" class="mr-2">More Details</Button>
             <Button
-              class="self-center"
-              on:click={() => applyForJob(job.id, job.title, job.employer.company_name)}
+              class={`self-center ${appliedJobs[job.id] ? 'bg-green-500 text-white' : 'bg-blue-500 text-black'}`}
+              on:click={() => handleApply(job)}
+
             >
-              Apply
+              {appliedJobs[job.id] ? "Applied" : "Apply"}
             </Button>
           </Card.Footer>
         </div>
