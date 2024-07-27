@@ -1,53 +1,46 @@
 <script lang="ts">
-  import New from './new.svelte'; // Import the NewEventForm component
-  import Edit from './edit.svelte'; // Import the EditEventForm component
-  import { Link } from '@inertiajs/svelte';
 
-  let showNewForm = false; // State to toggle new form visibility
-  let editingEventId = null; // State to keep track of which event is being edited
+  import { Button } from "$lib/components/ui/button/index.js";
+  import * as Card from "$lib/components/ui/card/index.js";
+  import * as Avatar from "$lib/components/ui/avatar";
 
-  function toggleNewForm() {
-    showNewForm = !showNewForm;
-  }
-
-  function toggleEditForm(id = null) {
-    editingEventId = editingEventId === id ? null : id;
-  }
-
-  export let events; // List of events passed as props
-
-  // Reactively update `updatedEvents` when `events` changes
-  $: updatedEvents = events;
+  export let events;
+  // Log the events array to check its structure
+  // console.log('events:', events[0].employer.user.profile_picture);
 </script>
 
-<h1 class="mb-6 text-2xl font-bold">All events</h1>
+<!-- {#each events as event}
+  <p>{event.title}</p>
+  <p>{event.employer.company_name}</p>
+  <p>{event.employer.user.profile_picture}</p>
+{/each} -->
+<h1 class="mx-auto my-24 text-5xl text-center">Discover the <span class="text-red-500">Best events</span></h1>
 
-<Link href="/events/new">New event (New Page)</Link>
-<button on:click={toggleNewForm}>New Event (In line)</button>
+<div class="grid grid-cols-1 gap-4">
+  {#each events as event}
+    <Card.Root class="w-full max-w-full overflow-hidden rounded-lg shadow-lg">
+        <!-- Avatar -->
 
-{#if showNewForm}
-  <New {toggleNewForm}/>
-{/if}
-
-<div class="mt-6 space-y-6">
-  {#each updatedEvents as event (event.id)}
-    <div>
-      {#if editingEventId === event.id}
-      <Edit {event} toggleEditForm={toggleEditForm} on:submitted={() => toggleEditForm(null)} />
-      {:else}
-        <Link href={`/events/${event.id}`}>{event.title}</Link>
-        <Link href={`/events/${event.id}/edit`}>Edit (New Page)</Link>
-        <button on:click={() => toggleEditForm(event.id)}>Edit (In line)</button>
-        <Link
-          href={`/events/${event.id}`}
-          method="delete"
-          as="button"
-          type="button"
-          class="text-indigo-600 hover:text-indigo-900"
-        >
-          Delete
-        </Link>
-      {/if}
-    </div>
+        <!-- Card Header -->
+        <div class="w-full">
+          <Card.Header class="flex p-0 pt-6 mt-4">
+            <div class="flex px-4 space-x-6">
+              <Avatar.Root class="w-24 h-24">
+                <Avatar.Image src="{event.employer.user.profile_picture}" alt="Employer Profile Picture" class="object-cover" />
+                <Avatar.Fallback></Avatar.Fallback>
+              </Avatar.Root>
+              <div class="self-center">
+                <Card.Title class="text-xl font-bold">{event.name}</Card.Title>
+                <Card.Description class="text-sm">{event.location} . <span class="text-sm">{event.status}</span></Card.Description>
+              </div>
+            </div>
+          </Card.Header>
+          <!-- Card Footer -->
+          <Card.Footer class="flex justify-end pb-4 border-gray-200">
+            <Button variant="outline" class="mr-2">More Details</Button>
+            <Button>Apply Now</Button>
+          </Card.Footer>
+        </div>
+    </Card.Root>
   {/each}
 </div>
