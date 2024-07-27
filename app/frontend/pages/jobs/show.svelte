@@ -23,7 +23,7 @@
       </div>
     </div>
   </div>
-  <Button
+  <!-- <Button
     class="self-center"
     variant="outline"
     on:click={() =>
@@ -36,7 +36,9 @@
       })}
   >
     Apply
-  </Button>
+  </Button> -->
+  <Button on:click={() => toast("Hello world")}>Show toast</Button>
+
 </div>
 
 <div class="w-full h-0.5 bg-gray-200"></div>

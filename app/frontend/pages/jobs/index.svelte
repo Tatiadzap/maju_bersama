@@ -1,5 +1,5 @@
 <script lang="ts">
-
+  import { toast } from "svelte-sonner";
   import { Button } from "$lib/components/ui/button/index.js";
   import * as Card from "$lib/components/ui/card/index.js";
   import * as Avatar from "$lib/components/ui/avatar";
@@ -38,7 +38,19 @@
           <!-- Card Footer -->
           <Card.Footer class="flex justify-end pb-4 border-gray-200">
             <Button variant="outline" class="mr-2">More Details</Button>
-            <Button>Apply Now</Button>
+            <Button
+              class="self-center"
+              on:click={() =>
+                toast.success(`Applied to ${job.title} at ${job.employer.company_name}!`, {
+                  description: "Sunday, December 03, 2023 at 9:00 AM",
+                  action: {
+                    // label: "Undo",
+                    onClick: () => console.info("Undo")
+                  }
+                })}
+            >
+              Apply
+            </Button>
           </Card.Footer>
         </div>
     </Card.Root>
