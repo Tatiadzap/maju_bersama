@@ -1,57 +1,32 @@
 <script lang="ts">
-  import { toast } from "svelte-sonner";
-  import { Button } from "$lib/components/ui/button";
+  import { applyForJob } from '$lib/jobApplicationUtils';
+  import { Button } from "$lib/components/ui/button/index.js";
+  import { appliedJobs } from '../../stores/jobStore';
+  import { get } from 'svelte/store';
 
-  export let job
-  export let employer
-  export let company_details
-  // export let company_details
+  export let job;
+
+  // Function to check if a job has been applied
+  const isApplied = (jobId) => {
+    return get(appliedJobs)[jobId];
+  };
 </script>
 
+<h1 class="mx-auto my-24 text-5xl text-center">{job.title}</h1>
 
-<div class="flex justify-between py-12">
-  <div class="flex space-x-4">
-    <img src="{company_details.profile_picture}" alt="" class="w-24 h-24">
-    <div class="flex flex-col justify-center">
-      <p class="text-xl font-medium">{job.title}</p>
-      <div class="flex space-x-6 row">
-        <p>{employer.company_name}</p>
-        <p>{job.location}</p>
-        <p>Full-time</p>
-        <p>{job.status}</p>
-        <!-- <p>{job.updated_at}</p> -->
-      </div>
-    </div>
-  </div>
-  <!-- <Button
-    class="self-center"
-    variant="outline"
-    on:click={() =>
-      toast.success("Event has been created", {
-        description: "Sunday, December 03, 2023 at 9:00 AM",
-        action: {
-          label: "Undo",
-          onClick: () => console.info("Undo")
-        }
-      })}
-  >
-    Apply
-  </Button> -->
-  <Button on:click={() => toast("Hello world")}>Show toast</Button>
+<div class="flex flex-col items-center">
+  <div class="w-full max-w-3xl p-4 rounded-lg shadow-lg">
+    <p>{job.description}</p>
+    <p>{job.location}</p>
+    <p>{job.status}</p>
+    <!-- Other job details -->
 
-</div>
-
-<div class="w-full h-0.5 bg-gray-200"></div>
-<div class="flex my-12">
-  <div class="space-y-12 flex-basis-2/3">
-    <div>
-      <h2 class="mb-2 text-lg font-medium">About the role</h2>
-      <p>{job.description}</p>
-    </div>
-
-    <div>
-      <h2 class="mb-2 text-lg font-medium">Job requirements</h2>
-      <p>{job.requirements}</p>
-    </div>
+    <Button
+      class="self-center mt-4"
+      on:click={() => applyForJob(job.id, job.title, job.employer.company_name)}
+      disabled={isApplied(job.id)}
+    >
+      {isApplied(job.id) ? "Applied" : "Apply"}
+    </Button>
   </div>
 </div>
