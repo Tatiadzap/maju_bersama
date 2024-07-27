@@ -1,20 +1,8 @@
 // src/lib/jobApplicationUtils.js
 
 import { toast } from "svelte-sonner";
-// import { appliedJobs } from "../stores/jobStore";
-import { appliedJobs } from "../../app/frontend/stores/userStore";
 
 export async function applyForJob(jobId, jobTitle, companyName) {
-  const currentState = appliedJobs.update((state) => {
-    if (state[jobId]) {
-      toast.error(`You have already applied to ${jobTitle} at ${companyName}`);
-      return state;
-    }
-    return state;
-  });
-
-  if (currentState[jobId]) return; // If already applied, exit early
-
   try {
     const response = await fetch("/job_applications", {
       method: "POST",
@@ -32,22 +20,18 @@ export async function applyForJob(jobId, jobTitle, companyName) {
     });
 
     if (response.ok) {
-      appliedJobs.update((state) => {
-        state[jobId] = true;
-        return state;
-      });
-      toast.success(`Applied to ${jobTitle} at ${companyName}!`, {
-        action: {
-          label: "",
-          onClick: async () => {
-            // You can implement undo functionality here if needed
-            console.info("Undo");
-          },
-        },
-      });
+      toast.success(`Applied to ${jobTitle} at ${companyName}!`);
     } else {
       const errorData = await response.json();
-      toast.error(`Failed to apply: ${errorData.errors.join(", ")}`);
+      if (response.status === 422 && errorData.message === "already_applied") {
+        toast.error(
+          `You have already applied to ${jobTitle} at ${companyName}`
+        );
+      } else {
+        toast.error(
+          `Failed to apply: ${errorData.errors ? errorData.errors.join(", ") : "Unknown error"}`
+        );
+      }
     }
   } catch (error) {
     toast.error(`An error occurred: ${error.message}`);
