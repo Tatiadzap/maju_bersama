@@ -7,6 +7,36 @@
   export let jobs;
   // Log the jobs array to check its structure
   // console.log('Jobs:', jobs[0].employer.user.profile_picture);
+  async function applyForJob(jobId, jobTitle, companyName) {
+    try {
+      const response = await fetch("/job_applications", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-CSRF-Token": document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+        },
+        body: JSON.stringify({
+          job_application: {
+            job_id: jobId
+          }
+        })
+      });
+
+      if (response.ok) {
+        toast.success(`Applied to ${jobTitle} at ${companyName}!`, {
+          action: {
+            label: "Undo",
+            onClick: () => console.info("Undo")
+          }
+        });
+      } else {
+        const errorData = await response.json();
+        toast.error(`Failed to apply: ${errorData.errors.join(", ")}`);
+      }
+    } catch (error) {
+      toast.error(`An error occurred: ${error.message}`);
+    }
+  }
 </script>
 
 <!-- {#each jobs as job}
