@@ -1,32 +1,58 @@
 <script lang="ts">
   import { applyForJob } from '$lib/jobApplicationUtils';
-  import { Button } from "$lib/components/ui/button/index.js";
-  import { appliedJobs } from '../../stores/jobStore';
-  import { get } from 'svelte/store';
+  import { Button } from "$lib/components/ui/button";
 
   export let job;
+  export let employer;
+  export let company_details;
 
-  // Function to check if a job has been applied
-  const isApplied = (jobId) => {
-    return get(appliedJobs)[jobId];
-  };
+  // Local state to track if the job is applied
+  export let isApplied
+  console.log(isApplied)
+
+  async function handleApply() {
+    const success = await applyForJob(job.id, job.title, employer.company_name);
+    if (success) {
+      isApplied = true;
+    }
+  }
 </script>
 
-<h1 class="mx-auto my-24 text-5xl text-center">{job.title}</h1>
+<div class="flex justify-between py-12">
+  <div class="flex space-x-4">
+    <img src={company_details.profile_picture} alt="Profile Picture" class="w-24 h-24">
+    <div class="flex flex-col justify-center">
+      <p class="text-xl font-medium">{job.title}</p>
+      <div class="flex space-x-6">
+        <p>{employer.company_name}</p>
+        <p>{job.location}</p>
+        <p>Full-time</p>
+        <p>{job.status}</p>
+      </div>
+    </div>
+  </div>
 
-<div class="flex flex-col items-center">
-  <div class="w-full max-w-3xl p-4 rounded-lg shadow-lg">
-    <p>{job.description}</p>
-    <p>{job.location}</p>
-    <p>{job.status}</p>
-    <!-- Other job details -->
+  <!-- Apply Button -->
+  <Button
+    class={`self-center ${isApplied ? 'bg-green-500 text-white' : 'bg-blue-500 text-black'}`}
+    on:click={handleApply}
+  >
+    {isApplied ? "Applied" : "Apply"}
+  </Button>
+</div>
 
-    <Button
-      class="self-center mt-4"
-      on:click={() => applyForJob(job.id, job.title, job.employer.company_name)}
-      disabled={isApplied(job.id)}
-    >
-      {isApplied(job.id) ? "Applied" : "Apply"}
-    </Button>
+<div class="w-full h-0.5 bg-gray-200"></div>
+
+<div class="flex my-12">
+  <div class="space-y-12 flex-basis-2/3">
+    <div>
+      <h2 class="mb-2 text-lg font-medium">About the role</h2>
+      <p>{job.description}</p>
+    </div>
+
+    <div>
+      <h2 class="mb-2 text-lg font-medium">Job requirements</h2>
+      <p>{job.requirements}</p>
+    </div>
   </div>
 </div>
