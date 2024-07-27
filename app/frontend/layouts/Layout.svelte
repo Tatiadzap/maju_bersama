@@ -2,6 +2,7 @@
   import { onMount } from 'svelte';
   import { ModeWatcher } from "mode-watcher";
   import MainNav from "../components/Layouts/MainNav.svelte";
+  import { Toaster } from "$lib/components/ui/sonner";
 
   //   // Force light mode on initial load
   // onMount(() => {
@@ -11,6 +12,7 @@
 </script>
 
 <ModeWatcher defaultMode="light" />
+<Toaster />
 
 <div>
   <MainNav />
