@@ -4,6 +4,7 @@ class JobApplicationsController < ApplicationController
   def create
     job_application = JobApplication.new(job_application_params)
     job_application.user_id = current_user.id
+    job_application.status = 'Applied'
 
     if job_application.save
       render json: { message: 'Application submitted successfully' }, status: :created
@@ -15,6 +16,6 @@ class JobApplicationsController < ApplicationController
   private
 
   def job_application_params
-    params.require(:job_application).permit(:job_id, :user_id)
+    params.require(:job_application).permit(:job_id)
   end
 end
