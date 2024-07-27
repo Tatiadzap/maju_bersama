@@ -37,14 +37,14 @@
           </Card.Header>
           <!-- Card Footer -->
           <Card.Footer class="flex justify-end pb-4 border-gray-200">
-            <Button variant="outline" class="mr-2">More Details</Button>
+            <Button href={`/jobs/${job.id}`} variant="outline" class="mr-2">More Details</Button>
             <Button
               class="self-center"
               on:click={() =>
                 toast.success(`Applied to ${job.title} at ${job.employer.company_name}!`, {
-                  description: "Sunday, December 03, 2023 at 9:00 AM",
+                  // description: "Sunday, December 03, 2023 at 9:00 AM",
                   action: {
-                    // label: "Undo",
+                    label: "Undo",
                     onClick: () => console.info("Undo")
                   }
                 })}
