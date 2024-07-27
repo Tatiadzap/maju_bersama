@@ -2,14 +2,23 @@ class JobApplicationsController < ApplicationController
   include Auth
 
   def create
-    job_application = JobApplication.new(job_application_params)
-    job_application.user_id = current_user.id
-    job_application.status = 'Applied'
+    job_id = params[:job_application][:job_id]
+    user_id = current_user.id
 
-    if job_application.save
-      render json: { message: 'Application submitted successfully' }, status: :created
+    existing_application = JobApplication.find_by(job_id: job_id, user_id: user_id)
+
+    if existing_application
+      render json: { message: 'already_applied' }, status: :unprocessable_entity
     else
-      render json: { errors: job_application.errors.full_messages }, status: :unprocessable_entity
+      job_application = JobApplication.new(job_application_params)
+      job_application.user_id = user_id
+      job_application.status = 'applied'
+
+      if job_application.save
+        render json: { message: 'success' }, status: :created
+      else
+        render json: { errors: job_application.errors.full_messages }, status: :unprocessable_entity
+      end
     end
   end
 
