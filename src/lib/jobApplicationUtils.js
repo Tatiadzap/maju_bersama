@@ -1,5 +1,3 @@
-// src/lib/jobApplicationUtils.js
-
 import { toast } from "svelte-sonner";
 
 export async function applyForJob(jobId, jobTitle, companyName) {
@@ -21,6 +19,7 @@ export async function applyForJob(jobId, jobTitle, companyName) {
 
     if (response.ok) {
       toast.success(`Applied to ${jobTitle} at ${companyName}!`);
+      return true; // Indicate success
     } else {
       const errorData = await response.json();
       if (response.status === 422 && errorData.message === "already_applied") {
@@ -32,8 +31,10 @@ export async function applyForJob(jobId, jobTitle, companyName) {
           `Failed to apply: ${errorData.errors ? errorData.errors.join(", ") : "Unknown error"}`
         );
       }
+      return false; // Indicate failure
     }
   } catch (error) {
     toast.error(`An error occurred: ${error.message}`);
+    return false; // Indicate failure
   }
 }
