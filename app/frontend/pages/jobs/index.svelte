@@ -47,7 +47,7 @@
           <Card.Footer class="flex justify-end pb-4 border-gray-200">
             <Button href={`/jobs/${job.id}`} variant="outline" class="mr-2">More Details</Button>
             <Button
-              class={`self-center ${appliedJobs[job.id] ? 'bg-green-500 text-white' : 'bg-blue-500 text-black'}`}
+              class={`self-center ${appliedJobs[job.id] ? 'bg-green-600 text-white' : 'bg-blue-500 text-black'}`}
               on:click={() => handleApply(job)}
 
             >

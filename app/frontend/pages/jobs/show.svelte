@@ -34,7 +34,7 @@
 
   <!-- Apply Button -->
   <Button
-    class={`self-center ${isApplied ? 'bg-green-500 text-white' : 'bg-blue-500 text-black'}`}
+    class={`self-center ${isApplied ? 'bg-green-600 text-white' : 'bg-blue-500 text-black'}`}
     on:click={handleApply}
   >
     {isApplied ? "Applied" : "Apply"}
