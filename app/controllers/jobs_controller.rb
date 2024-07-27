@@ -1,56 +1,30 @@
 class JobsController < ApplicationController
   # include Auth
-  before_action :set_event, only: %i[ show ]
+  before_action :set_job, only: %i[ show ]
 
   def index
-    @jobs = Job.includes(employer: :user).all.as_json(
-      include: {
-        employer: {
-          only: [:id, :company_name],
-          include: {
-            user: { only: [:id, :profile_picture] } # Adjust the attributes to include as necessary
+    @jobs = Job.includes(employer: :user).all.map do |job|
+      job.as_json(
+        include: {
+          employer: {
+            only: [:id, :company_name],
+            include: {
+              user: { only: [:id, :profile_picture] }
+            }
           }
         }
-      }
-    )
+      ).merge(applied_by_current_user: job_applied_by_current_user?(job.id))
+    end
   end
 
   def show
     fetch_employer
+    @isApplied = job_applied_by_current_user?(@job.id)
   end
-
-  # def new
-  #   @job = Job.new
-  # end
-
-  # def create
-  #   job = Job.new(event_params)
-  #   if job.save
-  #     redirect_to events_path, notice: 'Job created.'
-  #   else
-  #     redirect_to new_event_path, inertia: { errors: job.errors }
-  #   end
-  # end
-
-  # def edit
-  # end
-
-  # def update
-  #   if @job.update(event_params)
-  #     redirect_to events_path, notice: 'Job was successfully updated.'
-  #   else
-  #     redirect_to edit_event_path(@job), inertia: { errors: @job.errors }
-  #   end
-  # end
-
-  # def destroy
-  #   @job.destroy
-  #   redirect_to events_path, notice: 'Job was successfully deleted.'
-  # end
 
   private
 
-  def set_event
+  def set_job
     @job = Job.find(params[:id])
   end
 
@@ -61,5 +35,10 @@ class JobsController < ApplicationController
   def fetch_employer
     @employer = Employer.find(@job.employer_id)
     @company_details = @employer.user
+  end
+
+
+  def job_applied_by_current_user?(job_id)
+    JobApplication.exists?(job_id: job_id, user_id: current_user.id)
   end
 end
