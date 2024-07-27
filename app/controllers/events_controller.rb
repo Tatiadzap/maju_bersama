@@ -3,7 +3,16 @@ class EventsController < ApplicationController
   before_action :set_event, only: %i[ show edit update destroy ]
 
   def index
-    @events = Event.all.order(:id)
+    @events = Event.includes(employer: :user).all.as_json(
+      include: {
+        employer: {
+          only: [:id, :company_name],
+          include: {
+            user: { only: [:id, :profile_picture] } # Adjust the attributes to include as necessary
+          }
+        }
+      }
+    )
   end
 
   def show

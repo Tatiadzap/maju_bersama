@@ -18,7 +18,7 @@
 
 <div class="grid grid-cols-1 gap-4">
   {#each jobs as job}
-    <Card.Root class="w-full max-w-full overflow-hidden bg-white rounded-lg shadow-lg">
+    <Card.Root class="w-full max-w-full overflow-hidden rounded-lg shadow-lg">
         <!-- Avatar -->
 
         <!-- Card Header -->
@@ -30,8 +30,8 @@
                 <Avatar.Fallback></Avatar.Fallback>
               </Avatar.Root>
               <div class="self-center">
-                <Card.Title class="text-xl font-bold text-gray-900">{job.title}</Card.Title>
-                <Card.Description class="text-sm text-gray-600">{job.location} . <span class="text-sm text-gray-500">{job.status}</span></Card.Description>
+                <Card.Title class="text-xl font-bold">{job.title}</Card.Title>
+                <Card.Description class="text-sm">{job.location} . <span class="text-sm">{job.status}</span></Card.Description>
               </div>
             </div>
           </Card.Header>
