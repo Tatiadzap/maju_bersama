@@ -3,7 +3,7 @@ class JobsController < ApplicationController
   before_action :set_job, only: %i[ show ]
 
   def index
-    @jobs = Job.includes(employer: :user).all.map do |job|
+    @jobs = Job.includes(employer: :user).all.order(:created_at).map do |job|
       job.as_json(
         include: {
           employer: {
@@ -15,6 +15,10 @@ class JobsController < ApplicationController
         }
       ).merge(applied_by_current_user: job_applied_by_current_user?(job.id))
     end
+  end
+
+  def new
+    @job = Job.new
   end
 
   def show
@@ -39,6 +43,8 @@ class JobsController < ApplicationController
 
 
   def job_applied_by_current_user?(job_id)
-    JobApplication.exists?(job_id: job_id, user_id: current_user.id)
+    unless current_user.nil?
+      JobApplication.exists?(job_id: job_id, user_id: current_user.id)
+    end
   end
 end

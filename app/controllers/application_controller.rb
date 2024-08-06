@@ -1,4 +1,3 @@
-# app/controllers/application_controller.rb
 class ApplicationController < ActionController::Base
   use_inertia_instance_props
   include InertiaCsrf
@@ -9,8 +8,9 @@ class ApplicationController < ActionController::Base
         user: {
           id: current_user.id,
           email: current_user.email,
-          # first_name: current_user.first_name,
-          # last_name: current_user.last_name
+          role: current_user.role,
+          candidate: current_user.role == 'candidate' ? Candidate.find_by(user: current_user) : nil,
+          employer: current_user.role == 'employer' ? Employer.find_by(user: current_user) : nil
         }
       }
     else

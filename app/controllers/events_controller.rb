@@ -3,7 +3,7 @@ class EventsController < ApplicationController
   before_action :set_event, only: %i[ show edit update destroy ]
 
   def index
-    @events = Event.includes(employer: :user).all.as_json(
+    @events = Event.includes(employer: :user).all.order(:created_at).as_json(
       include: {
         employer: {
           only: [:id, :company_name],

@@ -36,5 +36,6 @@ Rails.application.routes.draw do
 
   # Defines the root path route ("/")
   # root "static#home"
-  root "jobs#index"
+  # root "jobs#index"
+  root to: 'candidates#show', id: 1
 end

@@ -10,12 +10,21 @@
   // Access shared instance props from Inertia
   const { auth } = $page.props;
   export let current_user = auth.user;
-  export let candidate = auth.candidate;
-  export let employer = auth.employer;
 
-  console.log(current_user.role)
-  console.log(candidate)
-  console.log(employer)
+  let profilePath = '';
+  // let userSpecificData = '';
+
+  if (current_user) {
+    if (current_user.role === 'candidate') {
+      let candidate = current_user.candidate
+      profilePath = `/candidates/${candidate.id}`;
+    } else if (current_user.role === 'employer') {
+      let employer = current_user.employer
+      profilePath = `/employers/${employer.id}`;
+    }
+  }
+
+  console.log(profilePath)
 
 </script>
 
@@ -34,6 +43,8 @@
 
   <div class="flex items-center space-x-2">
     {#if $page.props.auth && $page.props.auth.user}
+      <!-- <div>{$page.props.auth.user.first_name}</div> -->
+
       <DropdownMenu.Root>
         <DropdownMenu.Trigger asChild let:builder>
           <Button
@@ -68,11 +79,6 @@
           </DropdownMenu.Item>
         </DropdownMenu.Content>
       </DropdownMenu.Root>
-      {#if candidate }
-        <div>{candidate.first_name}</div>
-      {:else }
-        <div>{employer.company_name}</div>
-      {/if}
     {:else}
       <Link href="/login">Sign in</Link>
       <Link href="/sign_up">Sign up</Link>

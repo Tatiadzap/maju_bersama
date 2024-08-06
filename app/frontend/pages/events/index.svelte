@@ -14,7 +14,7 @@
   <p>{event.employer.company_name}</p>
   <p>{event.employer.user.profile_picture}</p>
 {/each} -->
-<h1 class="mx-auto my-24 text-5xl text-center">Discover the <span class="text-red-500">Best events</span></h1>
+<h1 class="mx-auto my-24 text-5xl text-center">Discover the <span class="text-red-500">Best Events</span></h1>
 
 <div class="grid grid-cols-1 gap-4">
   {#each events as event}
