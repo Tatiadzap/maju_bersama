@@ -44,6 +44,9 @@
   <div class="flex items-center space-x-2">
     {#if $page.props.auth && $page.props.auth.user}
       <!-- <div>{$page.props.auth.user.first_name}</div> -->
+      {#if current_user.role === 'employer'}
+        <Link href="/jobs/new">+ New Job</Link>
+      {/if}
 
       <DropdownMenu.Root>
         <DropdownMenu.Trigger asChild let:builder>
