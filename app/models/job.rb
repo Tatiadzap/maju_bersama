@@ -6,5 +6,8 @@ class Job < ApplicationRecord
   validates :status, inclusion: { in: %w[Open Closed On_Hold Draft] }, presence: true
 
   # Other validations and methods
+  def self.status_options
+    %w[Open Closed On_Hold Draft]
+  end
 
 end
