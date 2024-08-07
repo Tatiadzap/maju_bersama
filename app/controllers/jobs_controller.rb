@@ -1,6 +1,6 @@
 class JobsController < ApplicationController
   # include Auth
-  before_action :set_job, only: %i[show]
+  before_action :set_job, only: %i[show edit update destroy]
 
   def index
     @jobs = Job.includes(employer: :user).order(:created_at).map do |job|
@@ -34,6 +34,17 @@ class JobsController < ApplicationController
       redirect_to job_path(job), notice: 'Job created.' # Redirect to the newly created job's show page
     else
       redirect_to new_job_path, inertia: { errors: job.errors }
+    end
+  end
+
+  def edit
+  end
+
+  def update
+    if @event.update(event_params)
+      redirect_to events_path, notice: 'Event was successfully updated.'
+    else
+      redirect_to edit_event_path(@event), inertia: { errors: @event.errors }
     end
   end
 
