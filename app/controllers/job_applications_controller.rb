@@ -16,7 +16,7 @@ class JobApplicationsController < ApplicationController
           }
         }
       ).merge(application_status: application.status)
-      end
+    end
   end
 
   def create
