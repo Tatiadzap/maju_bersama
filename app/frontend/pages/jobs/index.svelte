@@ -1,8 +1,12 @@
 <script lang="ts">
+  import { page } from '@inertiajs/svelte';
   import { applyForJob } from '$lib/jobApplicationUtils';
   import { Button } from "$lib/components/ui/button/index.js";
   import * as Card from "$lib/components/ui/card/index.js";
   import * as Avatar from "$lib/components/ui/avatar";
+
+  const { auth } = $page.props;
+  export let current_user = auth.user;
 
   export let jobs;
 
@@ -46,13 +50,16 @@
           <!-- Card Footer -->
           <Card.Footer class="flex justify-end pb-4 border-gray-200">
             <Button href={`/jobs/${job.id}`} variant="outline" class="mr-2">More Details</Button>
-            <Button
-              class={`self-center ${appliedJobs[job.id] ? 'bg-green-600 text-white' : ''}`}
-              on:click={() => handleApply(job)}
-
-            >
-              {appliedJobs[job.id] ? "Applied" : "Apply"}
-            </Button>
+            {#if current_user.role === 'candidate'}
+              <Button
+                class={`self-center ${appliedJobs[job.id] ? 'bg-green-600 text-white' : ''}`}
+                on:click={() => handleApply(job)}
+              >
+                {appliedJobs[job.id] ? "Applied" : "Apply"}
+              </Button>
+            {:else if current_user.role === 'employer'}
+              <Button href="/jobs/{job.id}/edit"> Edit Job </Button>
+            {/if}
           </Card.Footer>
         </div>
     </Card.Root>
