@@ -7,11 +7,24 @@
   import Moon from "svelte-radix/Moon.svelte";
   import { toggleMode } from 'mode-watcher';
 
-  // Subscribe to the userStore
-  let user;
-  $: userStore.subscribe(value => {
-    user = value;
-  });
+  // Access shared instance props from Inertia
+  const { auth } = $page.props;
+  export let current_user = auth.user;
+
+  let profilePath = '';
+  // let userSpecificData = '';
+
+  if (current_user) {
+    if (current_user.role === 'candidate') {
+      let candidate = current_user.candidate
+      profilePath = `/candidates/${candidate.id}`;
+    } else if (current_user.role === 'employer') {
+      let employer = current_user.employer
+      profilePath = `/employers/${employer.id}`;
+    }
+  }
+
+  console.log(profilePath)
 
 </script>
 
@@ -30,7 +43,10 @@
 
   <div class="flex items-center space-x-2">
     {#if $page.props.auth && $page.props.auth.user}
-      <div>{$page.props.auth.user.first_name}</div>
+      <!-- <div>{$page.props.auth.user.first_name}</div> -->
+      {#if current_user.role === 'employer'}
+        <Link href="/jobs/new">+ New Job</Link>
+      {/if}
 
       <DropdownMenu.Root>
         <DropdownMenu.Trigger asChild let:builder>
@@ -50,7 +66,11 @@
           </Button>
         </DropdownMenu.Trigger>
         <DropdownMenu.Content align="end">
-          <DropdownMenu.Label>My Account</DropdownMenu.Label>
+          <DropdownMenu.Item>
+            <button use:inertia="{{ href: `/candidates/${current_user.id}`}}" type="button" class="w-full text-left">
+              My profile
+            </button>
+          </DropdownMenu.Item>
           <DropdownMenu.Separator />
           <DropdownMenu.Item>Settings</DropdownMenu.Item>
           <DropdownMenu.Item>Support</DropdownMenu.Item>
@@ -66,14 +86,6 @@
       <Link href="/login">Sign in</Link>
       <Link href="/sign_up">Sign up</Link>
     {/if}
-      <ul class="flex items-center space-x-8">
-        <li>
-          <Link href="/">Home</Link>
-        </li>
-        <li>
-          <Link href="/events">Events</Link>
-        </li>
-      </ul>
       <div>
         <Button on:click={toggleMode} variant="outline" size="icon">
           <Sun
@@ -86,6 +98,4 @@
         </Button>
       </div>
   </div>
-
-
 </nav>

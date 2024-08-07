@@ -18,7 +18,7 @@
   });
 
   function submit() {
-    form.post('/login');
+    $form.post('/login');
   }
 </script>
 
