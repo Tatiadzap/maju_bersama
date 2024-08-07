@@ -41,10 +41,10 @@ class JobsController < ApplicationController
   end
 
   def update
-    if @event.update(event_params)
-      redirect_to events_path, notice: 'Event was successfully updated.'
+    if @job.update(job_params)
+      redirect_to jobs_path, notice: 'Job was successfully updated.'
     else
-      redirect_to edit_event_path(@event), inertia: { errors: @event.errors }
+      redirect_to edit_job_path(@job), inertia: { errors: @job.errors }
     end
   end
 
