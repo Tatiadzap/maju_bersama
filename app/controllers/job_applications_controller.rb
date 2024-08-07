@@ -1,6 +1,24 @@
 class JobApplicationsController < ApplicationController
   include Auth
 
+  def index
+    @job_applications = JobApplication.includes(job: { employer: :user })
+                                      .where(user_id: current_user.id)
+                                      .order('job_applications.created_at DESC')
+                                      .map do |application|
+      application.job.as_json(
+        include: {
+          employer: {
+            only: [:id, :company_name],
+            include: {
+              user: { only: [:id, :profile_picture] }
+            }
+          }
+        }
+      ).merge(application_status: application.status)
+    end
+  end
+
   def create
     job_id = params[:job_application][:job_id]
     user_id = current_user.id
