@@ -4,12 +4,10 @@
   import * as Card from "$lib/components/ui/card/index.js";
   import * as Avatar from "$lib/components/ui/avatar";
 
-  // Access user information from Inertia
-  const { auth } = $page.props;
-  export let current_user = auth.user;
-
-  // The list of job applications with job details
   export let job_applications;
+  export let user_role = $page.props.auth.user.role;
+
+  console.log(job_applications); // Debugging to check the data structure
 </script>
 
 <h1 class="mx-auto my-24 text-5xl text-center">My <span class="text-red-500">Job Applications</span></h1>
@@ -17,32 +15,36 @@
 <div class="grid grid-cols-1 gap-4">
   {#each job_applications as application}
     <Card.Root class="w-full max-w-full overflow-hidden rounded-lg shadow-lg">
-        <!-- Avatar -->
-
-        <!-- Card Header -->
-        <div class="w-full">
-          <Card.Header class="flex p-0 pt-6 mt-4">
-            <div class="flex px-4 space-x-6">
-              <Avatar.Root class="w-24 h-24">
-                <Avatar.Image src={application.employer.user.profile_picture} alt="Employer Profile Picture" class="object-cover" />
-                <Avatar.Fallback></Avatar.Fallback>
-              </Avatar.Root>
-              <div class="self-center">
-                <Card.Title class="text-xl font-bold">{application.title}</Card.Title>
-                <Card.Description class="text-sm">{application.location} . <span class="text-sm">{application.status}</span></Card.Description>
-              </div>
+      <div class="w-full">
+        <Card.Header class="flex p-0 pt-6 mt-4">
+          <div class="flex px-4 space-x-6">
+            <Avatar.Root class="w-24 h-24">
+              {#if user_role === 'candidate'}
+                <Avatar.Image src={application.job.employer.user.profile_picture} alt="Employer Profile Picture" class="object-cover" />
+              {:else if user_role === 'employer'}
+                <Avatar.Image src={application.user.candidate.profile_picture} alt="Candidate Profile Picture" class="object-cover" />
+              {/if}
+              <Avatar.Fallback></Avatar.Fallback>
+            </Avatar.Root>
+            <div class="self-center">
+              <Card.Title class="text-xl font-bold">{application.job.title}</Card.Title>
+              <Card.Description class="text-sm">{application.user.candidate.first_name} {application.user.candidate.last_name}
+              <Card.Description class="text-sm">{application.job.location}</Card.Description>
+              </Card.Description>
             </div>
-          </Card.Header>
-          <!-- Card Footer -->
-          <Card.Footer class="flex justify-end pb-4 border-gray-200">
-            <Button href={`/jobs/${application.id}`} variant="outline" class="mr-2">More Details</Button>
-            {#if current_user.role === 'candidate'}
-              <div class="self-center font-bold text-green-600">
-                Applied on {new Date(application.created_at).toLocaleDateString()}
-              </div>
-            {/if}
-          </Card.Footer>
-        </div>
+          </div>
+        </Card.Header>
+        <Card.Footer class="flex justify-end pb-4 border-gray-200">
+          {#if user_role === 'employer'}
+            <Button href={`/candidates/${application.user.candidate.id}`} variant="outline" class="mr-2">Applicant Details</Button>
+          {/if}
+          {#if user_role === 'candidate'}
+            <div class="self-center font-bold text-green-600">
+              Applied on {new Date(application.created_at).toLocaleDateString()}
+            </div>
+          {/if}
+        </Card.Footer>
+      </div>
     </Card.Root>
   {/each}
 </div>

@@ -2,20 +2,65 @@ class JobApplicationsController < ApplicationController
   include Auth
 
   def index
-    @job_applications = JobApplication.includes(job: { employer: :user })
-                                      .where(user_id: current_user.id)
-                                      .order('job_applications.created_at DESC')
-                                      .map do |application|
-      application.job.as_json(
-        include: {
-          employer: {
-            only: [:id, :company_name],
-            include: {
-              user: { only: [:id, :profile_picture] }
+    if current_user.role == 'candidate'
+      # Fetch job applications for the current candidate user
+      @job_applications = JobApplication.includes(job: { employer: :user })
+                                        .where(user_id: current_user.id)
+                                        .order('job_applications.created_at DESC')
+                                        .map do |application|
+        application.as_json(
+          include: {
+            job: {
+              only: [:id, :title, :location], # Add :id to be used in the URL for jobs
+              include: {
+                employer: {
+                  only: [:id, :company_name],
+                  include: {
+                    user: { only: [:id, :profile_picture] }
+                  }
+                }
+              }
             }
           }
-        }
-      ).merge(application_status: application.status)
+        ).merge(
+          application_status: application.status,
+          created_at: application.created_at
+        )
+      end
+    elsif current_user.role == 'employer'
+      # Fetch job applications for jobs posted by the current employer
+      @job_applications = JobApplication.includes(user: :candidate, job: { employer: :user })
+                                        .where(job: { employer_id: current_user.employer.id })
+                                        .order('job_applications.created_at DESC')
+                                        .map do |application|
+        application.as_json(
+          include: {
+            job: {
+              only: [:id, :title, :location], # Ensure :id is included for the job
+              include: {
+                employer: {
+                  only: [:id, :company_name],
+                  include: {
+                    user: { only: [:id, :profile_picture] }
+                  }
+                }
+              }
+            },
+            user: {
+              only: [:id, :email],
+              include: {
+                candidate: { only: [:id, :first_name, :last_name] }
+              }
+            }
+          }
+        ).merge(
+          application_status: application.status,
+          applicant_name: "#{application.user.candidate.first_name} #{application.user.candidate.last_name}".strip,
+          created_at: application.created_at
+        )
+      end
+    else
+      @job_applications = []
     end
   end
 

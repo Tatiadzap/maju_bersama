@@ -12,6 +12,7 @@ class User < ApplicationRecord
   has_one :candidate, dependent: :destroy
   has_one :employer, dependent: :destroy
   has_many :job_applications, dependent: :destroy
+  has_many :applied_jobs, through: :job_applications, source: :job
   has_many :jobs, through: :job_applications
   has_many :event_registrations, dependent: :destroy
   has_many :jobs, through: :event_registrations
@@ -20,4 +21,8 @@ class User < ApplicationRecord
   # Optional: Add additional validations or associations as needed
   #
   enum role: { candidate: 'candidate', employer: 'employer', admin: 'admin' }
+
+  def full_name
+    "#{first_name} #{last_name}".strip
+  end
 end
