@@ -38,6 +38,7 @@ class JobsController < ApplicationController
   end
 
   def edit
+    @statuses = Job.status_options
   end
 
   def update

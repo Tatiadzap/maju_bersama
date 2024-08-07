@@ -5,11 +5,13 @@
 
   export let toggleEditForm
   export let job;
+  export let statuses
 
   const dispatch = createEventDispatcher();
 
   // Initialize the form with formatted date
   let form = useForm({
+    status: job.status,
     title: job.title,
     location: job.location,
     description: job.description,
@@ -39,6 +41,18 @@
 <div class="max-w-xl p-8 mx-auto mb-24">
   <h1 class="mb-6 text-2xl font-bold">Create a New Job</h1>
   <form on:submit|preventDefault={submit}>
+
+    <div class="mb-4">
+      <label for="status" class="block mb-4 text-sm font-medium">Status</label>
+      <select bind:value={form.status} class="block w-full p-2 mt-1 border rounded-md shadow-sm focus:ring focus:border sm:text-sm">
+        {#each statuses as option}
+          <option value={option}>{option}</option>
+        {/each}
+      </select>
+      {#if $form.errors.status}
+        <div class="form-error">{$form.errors.status}</div>
+      {/if}
+    </div>
 
     <div class="mb-4">
       <label for="title" class="block mb-4 text-sm font-medium">Title</label>
