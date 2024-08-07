@@ -3,18 +3,34 @@ class JobsController < ApplicationController
   before_action :set_job, only: %i[show edit update]
 
   def index
-    @jobs = Job.includes(employer: :user).order(:created_at).map do |job|
-      job.as_json(
-        include: {
-          employer: {
-            only: [:id, :company_name],
-            include: {
-              user: { only: [:id, :profile_picture] }
+    if current_user.role == 'employer'
+      @jobs = current_user.employer.jobs.includes(employer: :user).order(:created_at).map do |job|
+        job.as_json(
+          include: {
+            employer: {
+              only: [:id, :company_name],
+              include: {
+                user: { only: [:id, :profile_picture] }
+              }
             }
           }
-        }
-      ).merge(applied_by_current_user: job_applied_by_current_user?(job.id))
+        )
+        end
+    else
+      @jobs = Job.includes(employer: :user).order(:created_at).map do |job|
+        job.as_json(
+          include: {
+            employer: {
+              only: [:id, :company_name],
+              include: {
+                user: { only: [:id, :profile_picture] }
+              }
+            }
+          }
+        ).merge(applied_by_current_user: job_applied_by_current_user?(job.id))
+      end
     end
+
   end
 
   def show
