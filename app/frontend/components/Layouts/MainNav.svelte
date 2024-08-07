@@ -24,8 +24,6 @@
     }
   }
 
-  console.log(profilePath)
-
 </script>
 
 <nav class="flex justify-between p-6 mx-auto max-w-7xl">

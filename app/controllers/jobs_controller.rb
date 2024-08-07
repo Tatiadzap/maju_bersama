@@ -1,6 +1,6 @@
 class JobsController < ApplicationController
   # include Auth
-  before_action :set_job, only: %i[show edit update destroy]
+  before_action :set_job, only: %i[show edit update]
 
   def index
     @jobs = Job.includes(employer: :user).order(:created_at).map do |job|
