@@ -70,7 +70,7 @@
       {/if}
     </div>
 
-    <button type="submit" on:click={redirectToJob} disabled={$form.processing} class="w-full py-2 text-white bg-black rounded">Submit</button>
-    <button type="button" on:click={cancel} class="w-full py-2 mt-2 border-none rounded bg-none">Cancel</button>
+    <button type="submit" disabled={$form.processing}>Submit</button>
+    <button type="button" on:click={cancel}>Cancel</button>
   </form>
 </div>
