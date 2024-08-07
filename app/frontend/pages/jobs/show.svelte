@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { page } from '@inertiajs/svelte';
   import { applyForJob } from '$lib/jobApplicationUtils';
   import { Button } from "$lib/components/ui/button";
 
@@ -16,6 +17,9 @@
       isApplied = true;
     }
   }
+
+  const { auth } = $page.props;
+  export let current_user = auth.user;
 </script>
 
 <div class="flex justify-between py-12">
@@ -33,12 +37,17 @@
   </div>
 
   <!-- Apply Button -->
-  <Button
-    class={`self-center ${isApplied ? 'bg-green-600 text-white' : 'bg-blue-500 text-black'}`}
-    on:click={handleApply}
-  >
-    {isApplied ? "Applied" : "Apply"}
-  </Button>
+  {#if current_user.role === 'candidate'}
+    <Button
+      class={`self-center ${isApplied ? 'bg-green-600 text-white' : 'bg-blue-500 text-black'}`}
+      on:click={handleApply}
+    >
+      {isApplied ? "Applied" : "Apply"}
+    </Button>
+  {:else if current_user.role === 'employer'}
+    <Button href="/jobs/{job.id}/edit"> Edit Job </Button>
+  {/if}
+
 </div>
 
 <div class="w-full h-0.5 bg-gray-200"></div>
