@@ -1,1 +1,78 @@
-Edit job
+<script lang="ts">
+  import dayjs from 'dayjs';
+  import { useForm, router } from '@inertiajs/svelte';
+  import { createEventDispatcher } from 'svelte';
+
+  export let toggleEditForm
+  export let job;
+
+  const dispatch = createEventDispatcher();
+
+  // Initialize the form with formatted date
+  let form = useForm({
+    title: job.title,
+    location: job.location,
+    description: job.description,
+    requirements: job.requirements
+  });
+
+  async function submit() {
+    await $form.put(`/jobs/${job.id}`, {
+      onSuccess: () => {
+        $form.reset();
+        router.visit('/jobs');
+      }
+    });
+    dispatch('submitted');
+  }
+
+  function cancel() {
+    $form.reset();
+    if (toggleEditForm) {
+      toggleEditForm();
+    } else {
+      router.visit('/jobs'); // Hide the form when cancel is clicked
+    }
+  }
+</script>
+
+<div class="max-w-xl p-8 mx-auto mb-24">
+  <h1 class="mb-6 text-2xl font-bold">Create a New Job</h1>
+  <form on:submit|preventDefault={submit}>
+
+    <div class="mb-4">
+      <label for="title" class="block mb-4 text-sm font-medium">Title</label>
+      <input type="text" bind:value={$form.title} class="block w-full p-2 py-2 mt-1 border rounded-md shadow-sm focus:ring focus:border sm:text-sm" />
+      {#if $form.errors.title}
+        <div class="form-error">{$form.errors.title}</div>
+      {/if}
+    </div>
+
+    <div class="mb-4">
+      <label for="location" class="block mb-4 text-sm font-medium">Location</label>
+      <input type="text" bind:value={$form.location} class="block w-full p-2 py-2 mt-1 border rounded-md shadow-sm focus:ring focus:border sm:text-sm" />
+      {#if $form.errors.location}
+        <div class="form-error">{$form.errors.location}</div>
+      {/if}
+    </div>
+
+    <div class="mb-4">
+      <label for="description" class="block mb-4 text-sm font-medium">Description</label>
+      <textarea bind:value={$form.description} class="block w-full p-2 py-2 pb-24 mt-1 border rounded-md shadow-sm focus:ring focus:border sm:text-sm"></textarea>
+      {#if $form.errors.description}
+        <div class="form-error">{$form.errors.description}</div>
+      {/if}
+    </div>
+
+    <div class="mb-4">
+      <label for="requirements" class="block mb-4 text-sm font-medium">Requirements</label>
+      <textarea bind:value={$form.requirements} class="block w-full p-2 pt-2 pb-24 mt-1 border rounded-md shadow-sm focus:ring focus:border sm:text-sm"></textarea>
+      {#if $form.errors.requirements}
+        <div class="form-error">{$form.errors.requirements}</div>
+      {/if}
+    </div>
+
+    <button type="submit" disabled={$form.processing}>Submit</button>
+    <button type="button" on:click={cancel}>Cancel</button>
+  </form>
+</div>
