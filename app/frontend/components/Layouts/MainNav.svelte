@@ -37,6 +37,9 @@
     <li>
       <Link href="/events">Events</Link>
     </li>
+    <li>
+      <Link href="/job_applications">Job Applications</Link>
+    </li>
   </ul>
 
   <div class="flex items-center space-x-2">

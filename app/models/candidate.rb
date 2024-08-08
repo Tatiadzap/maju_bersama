@@ -7,5 +7,6 @@ class Candidate < ApplicationRecord
 
   validates :first_name, :last_name, presence: true
 
+  has_many :job_applications, foreign_key: :user_id, primary_key: :user_id
   # Other validations and methods
 end
