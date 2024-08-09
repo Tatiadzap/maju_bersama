@@ -1,10 +1,16 @@
 class CandidatesController < ApplicationController
   # include Auth
-  before_action :set_candidate, only: %i[ show ]
+  before_action :set_candidate, only: %i[ show edit ]
 
   # def index
   #   @candidates = Candidate.all.order(:id)
   # end
+  #
+  def edit
+  end
+
+  def update
+  end
 
   def show
     fetch_experience
