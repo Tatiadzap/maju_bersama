@@ -1,6 +1,7 @@
 class ApplicationController < ActionController::Base
   use_inertia_instance_props
   include InertiaCsrf
+  include Auth
 
   inertia_share auth: -> {
     if user_signed_in?
