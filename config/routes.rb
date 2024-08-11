@@ -36,5 +36,7 @@ Rails.application.routes.draw do
 
   # Defines the root path route ("/")
   root "static#home"
+
+  get '/playground', to: 'pages#playground'
   # root "jobs#index"
 end
