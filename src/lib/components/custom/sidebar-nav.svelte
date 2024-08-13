@@ -1,43 +1,69 @@
 <script lang="ts">
-	import { cubicInOut } from "svelte/easing";
-	import { crossfade } from "svelte/transition";
-	import { cn } from "$lib/utils.js";
-	import { page } from "$app/stores";
-	import { Button } from "$lib/components/ui/button";
+  import { createEventDispatcher } from 'svelte';
 
-	let className: string | undefined | null = undefined;
-	export let items: { href: string; title: string }[];
-	export { className as class };
+  export let currentSection: string;
+  export let onSectionChange: (section: string) => void;
 
-	const [send, receive] = crossfade({
-		duration: 250,
-		easing: cubicInOut,
-	});
+  const dispatch = createEventDispatcher();
+
+  function handleSectionChange(section: string) {
+    dispatch('sectionChange', section);
+    onSectionChange(section);
+  }
 </script>
 
-<nav class={cn("flex space-x-2 lg:flex-col lg:space-x-0 lg:space-y-1", className)}>
-	{#each items as item}
-		{@const isActive = $page.url.pathname === item.href}
-
-		<Button
-			href={item.href}
-			variant="ghost"
-			class={cn(
-				!isActive && "hover:underline",
-				"relative justify-start hover:bg-transparent"
-			)}
-			data-sveltekit-noscroll
-		>
-			{#if isActive}
-				<div
-					class="absolute inset-0 rounded-md bg-muted"
-					in:send={{ key: "active-sidebar-tab" }}
-					out:receive={{ key: "active-sidebar-tab" }}
-				/>
-			{/if}
-			<div class="relative">
-				{item.title}
-			</div>
-		</Button>
-	{/each}
+<nav class="w-1/4 p-4 bg-gray-100">
+  <ul class="space-y-2">
+    <li>
+      <button
+        class="w-full p-2 text-left rounded hover:bg-gray-200"
+        class:font-bold={currentSection === 'profile'}
+        on:click={() => handleSectionChange('profile')}
+      >
+        Profile
+      </button>
+    </li>
+    <li>
+      <button
+        class="w-full p-2 text-left rounded hover:bg-gray-200"
+        class:font-bold={currentSection === 'account'}
+        on:click={() => handleSectionChange('account')}
+      >
+        Account
+      </button>
+    </li>
+    <li>
+      <button
+        class="w-full p-2 text-left rounded hover:bg-gray-200"
+        class:font-bold={currentSection === 'appearance'}
+        on:click={() => handleSectionChange('appearance')}
+      >
+        Appearance
+      </button>
+    </li>
+    <li>
+      <button
+        class="w-full p-2 text-left rounded hover:bg-gray-200"
+        class:font-bold={currentSection === 'notifications'}
+        on:click={() => handleSectionChange('notifications')}
+      >
+        Notifications
+      </button>
+    </li>
+    <li>
+      <button
+        class="w-full p-2 text-left rounded hover:bg-gray-200"
+        class:font-bold={currentSection === 'display'}
+        on:click={() => handleSectionChange('display')}
+      >
+        Display
+      </button>
+    </li>
+  </ul>
 </nav>
+
+<style>
+  button {
+    cursor: pointer;
+  }
+</style>
