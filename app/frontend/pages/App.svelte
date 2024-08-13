@@ -1,64 +1,36 @@
-<script>
-  import { onMount } from 'svelte';
-  import { Button } from "$lib/components/ui/button"
-  import { toast } from "svelte-sonner";
+<script lang="ts">
+	import { useTransform, useViewportScroll } from 'svelte-motion';
+	import GoogleGeminiEffect from '$lib/components/effects/google-gemini-effect/GoogleGeminiEffect.svelte';
 
-  let canvas;
+	let ref: HTMLDivElement;
 
-  onMount(() => {
-    const ctx = canvas.getContext('2d');
-    let frame;
+	const { scrollYProgress } = useViewportScroll();
 
-    (function loop() {
-      frame = requestAnimationFrame(loop);
-
-      const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-
-      for (let p = 0; p < imageData.data.length; p += 4) {
-        const i = p / 4;
-        const x = i % canvas.width;
-        const y = i / canvas.height >>> 0;
-
-        const t = window.performance.now();
-
-        const r = 64 + (128 * x / canvas.width) + (64 * Math.sin(t / 1000));
-        const g = 64 + (128 * y / canvas.height) + (64 * Math.cos(t / 1400));
-        const b = 128;
-
-        imageData.data[p + 0] = r;
-        imageData.data[p + 1] = g;
-        imageData.data[p + 2] = b;
-        imageData.data[p + 3] = 255;
-      }
-
-      ctx.putImageData(imageData, 0, 0);
-    }());
-
-    return () => {
-      cancelAnimationFrame(frame);
-    };
-  });
+	const pathLengthFirst = useTransform(scrollYProgress, [0, 0.8], [0.2, 1.2]);
+	const pathLengthSecond = useTransform(scrollYProgress, [0, 0.8], [0.15, 1.2]);
+	const pathLengthThird = useTransform(scrollYProgress, [0, 0.8], [0.1, 1.2]);
+	const pathLengthFourth = useTransform(scrollYProgress, [0, 0.8], [0.05, 1.2]);
+	const pathLengthFifth = useTransform(scrollYProgress, [0, 0.8], [0, 1.2]);
 </script>
 
-<div class="flex items-center justify-center mt-8">
-  <canvas
-      bind:this={canvas}
-      width={32}
-      height={32}
-      class="w-32 h-32 bg-[#666]"
-  ></canvas>
-
-  <div>
-    <h1 class="text-3xl font-bold tracking-wide underline">Hello World!</h1>
-    <p class="font-thin text-gray-700">My first Svelte component</p>
-  </div>
+<div
+	class="relative h-[400vh] w-full overflow-clip rounded-md pt-40 pb-20 dark:border dark:border-white/[0.1]"
+	bind:this={ref}
+>
+	<GoogleGeminiEffect
+		pathLengths={[
+			pathLengthFirst,
+			pathLengthSecond,
+			pathLengthThird,
+			pathLengthFourth,
+			pathLengthFifth
+		]}
+    title = "Memberdayakan Potensi, Mewujudkan Kesempatan"
+    description = "Dukungan karir dan pelatihan keterampilan bagi individu dengan disabilitas"
+    button = "Mulai Sekarang"
+	/>
 </div>
 
-<Button on:click={() => toast("Hello world")}>Show toast</Button>
-
-<style>
-    canvas {
-        -webkit-mask: url(https://svelte.dev/svelte-logo-mask.svg) 50% 50% no-repeat;
-        mask: url(https://svelte.dev/svelte-logo-mask.svg) 50% 50% no-repeat;
-    }
-</style>
+<div class="max-w-[900px] mx-auto text-lg py-20">
+  <p class="text-center">Kami berkomitmen untuk menjembatani kesenjangan antara potensi dan kesempatan, memberikan pelatihan keterampilan yang disesuaikan, dukungan karir pribadi, dan kesempatan penempatan kerja bagi individu dengan disabilitas.</p>
+</div>
