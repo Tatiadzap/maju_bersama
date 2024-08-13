@@ -3,8 +3,6 @@
   import { Button } from "$lib/components/ui/button"
   import { toast } from "svelte-sonner";
 
-
-
   let canvas;
 
   onMount(() => {
