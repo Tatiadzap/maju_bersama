@@ -9,12 +9,7 @@
 		'linear-gradient(to bottom right, var(--orange-500), var(--yellow-500))'
 	];
 
-	export let content: { title: string; description: string }[] = [
-		{ title: 'Collaborative Editing', description: 'Work together in real time...' },
-		{ title: 'Real time changes', description: 'See changes as they happen...' },
-		{ title: 'Version control', description: 'Experience real-time updates...' },
-		// Add more items as needed
-	];
+	export let content
 
 	let ref: HTMLDivElement;
 
@@ -48,17 +43,17 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 159" fill="none"><path d="M0 159C315.5 5.15521 1426.5 -104.214 1440 159H0Z" fill="#DCB3FF"></path></svg>
 <div
 	bind:this={ref}
-	class="relative flex justify-center px-10 py-32 space-x-10"
+	class="relative flex justify-evenly px-10 py-32 space-x-10"
 	style="background-color: {backgroundColorsLight[activeCard % backgroundColorsLight.length]}; transition: background-color 0.5s ease-in-out; min-height: 100vh;"
 >
 	<!-- Left side content -->
-	<div class="space-y-[60vh]">
+	<div class="space-y-[60vh] flex-1 max-w-md">
 		{#each content as item, index (item.title + index)}
 			<div class="my-20 content-card">
-				<h2 class="text-4xl font-bold">
+				<h1>
 					{item.title}
-				</h2>
-				<p class="text-lg mt-10 max-w-sm">
+				</h1>
+				<p class="text-lg mt-10">
 					{item.description}
 				</p>
 			</div>
@@ -69,7 +64,7 @@
 
 	<!-- Right side sticky centered box -->
 	<div
-		class="sticky top-[calc(50%-10rem)] h-60 w-80 overflow-hidden rounded-md bg-white"
+		class="sticky top-[calc(50%-10rem)] h-60 w-80 overflow-hidden rounded-md bg-white flex-1 max-w-md"
 		style="background: {linearGradients[activeCard % linearGradients.length]};"
 	>
 		<!-- Box content goes here -->
