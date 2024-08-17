@@ -48,7 +48,7 @@
 		on:inview_change={handleChange}
 		class="relative mt-32 animate-fade-up opacity-0 [--animation-delay:400ms] [perspective:2000px] after:absolute after:inset-0 after:z-50"
 	>
-  <div class="mx-auto relative w-full max-w-[720px] aspect-[1/1]">
+  <!-- <div class="mx-auto relative w-full max-w-[720px] aspect-[1/1]">
     <div class="absolute inset-0 bg-gray-300 rounded-full overflow-hidden">
       <img
         src={IndonesianSmiling}
@@ -56,7 +56,7 @@
         class="w-full h-full object-cover"
       />
     </div>
-  </div>
+  </div> -->
 
 
 	</div>
