@@ -14,5 +14,4 @@ class Event < ApplicationRecord
   def self.status_options
     %w[Open Closed On_Hold Draft]
   end
-  # Other validations and methods
 end
