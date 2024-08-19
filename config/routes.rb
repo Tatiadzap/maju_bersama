@@ -26,6 +26,7 @@ Rails.application.routes.draw do
 
   resources :events
   resources :candidates
+  resources :employers
   resources :jobs
   resources :job_applications, only: [:index, :create]
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html

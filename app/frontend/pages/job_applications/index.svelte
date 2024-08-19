@@ -28,9 +28,7 @@
             </Avatar.Root>
             <div class="self-center">
               <Card.Title class="text-xl font-bold">{application.job.title}</Card.Title>
-              <Card.Description class="text-sm">{application.user.candidate.first_name} {application.user.candidate.last_name}
               <Card.Description class="text-sm">{application.job.location}</Card.Description>
-              </Card.Description>
             </div>
           </div>
         </Card.Header>
