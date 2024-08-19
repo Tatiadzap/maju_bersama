@@ -51,6 +51,7 @@ class EventsController < ApplicationController
   end
 
   def edit
+    @statuses = Event.status_options
   end
 
   def update
