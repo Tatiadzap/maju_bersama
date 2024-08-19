@@ -66,13 +66,81 @@
 
     --ring: hsl(212.7, 26.8%, 83.9);
   }
-}
 
-@layer base {
+  h1 {
+    @apply scroll-m-20 text-4xl font-extrabold tracking-tight lg:text-5xl;
+  }
+
+  h2 {
+    @apply scroll-m-20 pb-2 text-3xl font-semibold tracking-tight transition-colors first:mt-0;
+  }
+
+  h3 {
+    @apply scroll-m-20 text-2xl font-semibold tracking-tight;
+  }
+
+  h4 {
+    @apply scroll-m-20 text-xl font-semibold tracking-tight;
+  }
+
+  blockquote {
+    @apply mt-6 border-l-2 pl-6 italic;
+  }
+
+  lead {
+    @apply text-muted-foreground text-xl;
+  }
+
+  large {
+    @apply text-lg font-semibold;
+  }
+
+  small {
+    @apply text-sm font-medium leading-none;
+  }
+
+  muted {
+    @apply text-muted-foreground text-sm;
+  }
+
   * {
     @apply border-border;
   }
+
   body {
     @apply bg-background text-foreground;
+  }
+}
+
+@layer components {
+  /* Table styles */
+  table {
+    @apply w-full;
+  }
+
+  thead tr {
+    @apply even:bg-muted m-0 border-t p-0;
+  }
+
+  th,
+  td {
+    @apply border px-4 py-2 text-left;
+    @apply [&[align=center]]:text-center;
+    @apply [&[align=right]]:text-right;
+  }
+
+  tbody tr {
+    @apply even:bg-muted m-0 border-t p-0;
+  }
+
+  /* List styles */
+  ul {
+    @apply my-6 ml-6;
+    @apply [&>li]:mt-2;
+  }
+
+  /* Inline code styles */
+  code {
+    @apply bg-muted relative rounded px-[0.3rem] py-[0.2rem] font-mono text-sm font-semibold;
   }
 }

@@ -17,7 +17,7 @@
 <div>
   <MainNav />
   <main>
-    <div class="px-4 mx-auto max-w-7xl sm:px-8">
+    <div>
       <slot />
     </div>
   </main>
