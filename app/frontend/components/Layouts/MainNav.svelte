@@ -29,7 +29,7 @@
 <nav class="flex justify-between p-6 mx-auto max-w-7xl">
   <ul class="flex items-center space-x-8">
     <li>
-      <Link href="/">Home</Link>
+      <Link href="/pages/home">Home</Link>
     </li>
     <li>
       <Link href="/jobs">Jobs</Link>
