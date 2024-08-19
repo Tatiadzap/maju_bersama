@@ -12,12 +12,14 @@
 </script>
 
 <Card class="p-6 mb-4 border-none shadow-none">
-  <div>
+  <div class="flex justify-between">
     <Avatar.Root>
       <Avatar.Image src="user.profile_picture" alt="@shadcn"/>
       <Avatar.Fallback>{employer.company_name}</Avatar.Fallback>
     </Avatar.Root>
+    <Link href="{employer.id}/edit">Edit profile</Link>
   </div>
+
   <div>
     <h2 class="mb-4 text-lg font-bold">{employer.company_name}
     <p class="font-light">Website: {employer.website}</p>
@@ -31,7 +33,7 @@
 
 <Card class="p-6 mb-4 border-none shadow-none">
   <div>
-    <h1 class="mb-4 text-lg font-bold">Bio</h1>
-    <p class="">{user.bio}</p>
+    <h1 class="mb-4 text-lg font-bold">About</h1>
+    <p class="">{employer.company_description}</p>
   </div>
 </Card>
