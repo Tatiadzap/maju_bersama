@@ -28,17 +28,17 @@
     </Avatar.Root>
   </div>
   <div>
-    <h1 class="mb-4 text-lg font-bold">{candidate.first_name} {candidate.last_name}</h1>
-    <h2 class="font-light">{user.email}</h2>
-    <h2 class="font-light">{user.phone}</h2>
-    <h2 class="font-light">{user.city}, {user.state}</h2>
+    <h2 class="mb-4 text-lg font-bold">{candidate.first_name} {candidate.last_name}</h2>
+    <p class="font-light">{user.email}</p>
+    <p class="font-light">{user.phone}</p>
+    <p class="font-light">{user.city}, {user.state}</p>
   </div>
 </Card>
 
 <Card class="p-6 mb-4 border-none shadow-none">
   <div>
     <h1 class="mb-4 text-lg font-bold">Bio</h1>
-    <h2 class="">{user.bio}</h2>
+    <p class="">{user.bio}</p>
   </div>
 </Card>
 
@@ -47,7 +47,7 @@
   {#each experiences as experience, index}
     <div class="py-12 space-y-1">
       <p class="text-lg font-medium">{experience.job_title}</p>
-      <h2 class="">{experience.company_name}</h2>
+      <p class="">{experience.company_name}</p>
       <p class="text-sm text-gray-500">{formatDate(experience.start_date, 'MMM YYYY')} - {formatDate(experience.end_date, 'MMM YYYY')}</p>
       <p class="text-sm">{experience.description}</p>
     </div>
