@@ -3,6 +3,7 @@
   import { ModeWatcher } from "mode-watcher";
   import MainNav from "../components/Layouts/MainNav.svelte";
   import { Toaster } from "$lib/components/ui/sonner";
+  export let ignoreStyles = false;
 
   //   // Force light mode on initial load
   // onMount(() => {
@@ -17,8 +18,8 @@
 <div>
   <MainNav />
   <main>
-    <div>
-      <slot />
+    <div class={ignoreStyles ? '' : 'px-4 mx-auto max-w-7xl sm:px-8'}>
+      <slot ignoreStyles={ignoreStyles} />
     </div>
   </main>
 </div>
