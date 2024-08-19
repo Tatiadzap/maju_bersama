@@ -9,12 +9,7 @@
 	const inviewOptions = {}; // You can customize this object based on your needs
 </script>
 
-<div
-	class={cn(
-		'relative z-0 flex min-h-screen w-full flex-col items-center justify-center overflow-hidden rounded-md bg-slate-950',
-		className
-	)}
->
+<div class={cn( 'relative z-0 flex min-h-screen w-full flex-col items-center justify-center overflow-hidden rounded-md bg-slate-950', className)}>
 	<div class="relative isolate z-0 flex w-full flex-1 scale-y-125 items-center justify-center">
 		<Motion
 			let:motion

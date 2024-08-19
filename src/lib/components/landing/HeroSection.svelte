@@ -32,7 +32,7 @@
 	>
     Kami mendukung individu dengan disabilitas melalui pelatihan keterampilan yang disesuaikan, dukungan karir pribadi, dan kesempatan kerja yang inklusif.
 	</p>
-	<Button
+	<Button href="/sign_up"
 		class="-translate-y-4 animate-fade-in gap-1 rounded-lg text-white opacity-0 ease-in-out [--animation-delay:600ms] dark:text-black"
 	>
 		<span>Mulai Sekarang - Gratis </span>
