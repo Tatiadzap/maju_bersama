@@ -33,6 +33,8 @@ class EventsController < ApplicationController
   end
 
   def show
+    fetch_employer
+    @isRegistered = event_registered_by_current_user?(@event.id)
   end
 
   def new
@@ -72,6 +74,11 @@ class EventsController < ApplicationController
 
   def event_params
     params.fetch(:event, {}).permit(:name, :description, :start_date)
+  end
+
+  def fetch_employer
+    @employer = Employer.find(@event.employer_id)
+    @company_details = @employer.user
   end
 
   def event_registered_by_current_user?(event_id)

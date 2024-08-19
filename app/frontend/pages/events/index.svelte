@@ -40,7 +40,7 @@
             </div>
           </Card.Header>
           <Card.Footer class="flex justify-end pb-4 border-gray-200">
-            <Button variant="outline" class="mr-2">More Details</Button>
+            <Button href={`/events/${event.id}`} variant="outline" class="mr-2">More Details</Button>
             {#if current_user.role === 'candidate'}
               <Button
                 class={`self-center ${registeredEvents[event.id] ? 'bg-green-600 text-white' : ''}`}
