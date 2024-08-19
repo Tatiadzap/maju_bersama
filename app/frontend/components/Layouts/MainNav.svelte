@@ -68,7 +68,7 @@
         </DropdownMenu.Trigger>
         <DropdownMenu.Content align="end">
           <DropdownMenu.Item>
-            <button use:inertia="{{ href: `/candidates/${current_user.id}`}}" type="button" class="w-full text-left">
+            <button use:inertia="{{ href: {profilePath}}}" type="button" class="w-full text-left">
               My profile
             </button>
           </DropdownMenu.Item>
