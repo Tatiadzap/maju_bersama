@@ -1,55 +1,59 @@
 class EventsController < ApplicationController
   include Auth
-  before_action :set_event, only: %i[ show edit update destroy ]
+
+  # Ensure set_event is only called on actions that need it
+  before_action :set_event, only: %i[show edit update destroy]
 
   def index
-    if current_user.role == 'employer'
-      @events = current_user.employer.events.includes(employer: :user).order(:created_at).map do |event|
-        event.as_json(
-          include: {
-            employer: {
-              only: [:id, :company_name],
-              include: {
-                user: { only: [:id, :profile_picture] }
-              }
+    @events = fetch_events.map do |event|
+      event.as_json(
+        include: {
+          employer: {
+            only: [:id, :company_name],
+            include: {
+              user: { only: [:id, :profile_picture] }
             }
           }
-        )
-      end
-    else
-      @events = Event.includes(employer: :user).order(:created_at).map do |event|
-        event.as_json(
-          include: {
-            employer: {
-              only: [:id, :company_name],
-              include: {
-                user: { only: [:id, :profile_picture] }
-              }
-            }
-          }
-        ).merge(registered_by_current_user: event_registered_by_current_user?(event.id))
-      end
+        }
+      ).merge(
+        registered_by_current_user: current_user.role == 'candidate' && event_registered_by_current_user?(event.id)
+      )
     end
   end
 
   def show
-    fetch_employer
-    @isRegistered = event_registered_by_current_user?(@event.id)
+    @event = Event.find(params[:id])
+    @event_data = @event.as_json(
+      include: {
+        employer: {
+          only: [:id, :company_name],
+          include: {
+            user: { only: [:id, :profile_picture] }
+          }
+        }
+      }
+    ).merge(
+      registered_by_current_user: event_registered_by_current_user?(@event.id),
+      company_details: @event.employer.user
+    )
+
+    render inertia: 'events/show', props: {
+      event: @event_data
+    }
   end
+
 
   def new
     @event = Event.new
   end
 
   def create
-    event = Event.new(event_params)
-    event.employer = current_user.employer
-    event.status = "Open" # Ensure this association is correct
+    @event = current_user.employer.events.new(event_params.merge(status: 'Open'))
 
-    if event.save
-      redirect_to event_path(event), notice: 'Event created.'
+    if @event.save
+      redirect_to event_path(@event), notice: 'Event created.'
     else
-      redirect_to new_event_path, inertia: { errors: event.errors }
+      redirect_to new_event_path, inertia: { errors: @event.errors }
     end
   end
 
@@ -77,17 +81,18 @@ class EventsController < ApplicationController
   end
 
   def event_params
-    params.fetch(:event, {}).permit(:name, :description, :start_time, :end_time)
+    params.require(:event).permit(:name, :description, :start_time, :end_time)
   end
 
-  def fetch_employer
-    @employer = Employer.find(@event.employer_id)
-    @company_details = @employer.user
+  def fetch_events
+    if current_user.role == 'employer'
+      current_user.employer.events.includes(employer: :user).order(:created_at)
+    else
+      Event.includes(employer: :user).order(:created_at)
+    end
   end
 
   def event_registered_by_current_user?(event_id)
-    return false if current_user.nil?
-
-    EventRegistration.exists?(event_id: event_id, user_id: current_user.id)
+    current_user && EventRegistration.exists?(event_id: event_id, user_id: current_user.id)
   end
 end

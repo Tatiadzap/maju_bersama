@@ -69,3 +69,31 @@ export async function unregisterForEvent(eventId, eventName, companyName) {
     return false;
   }
 }
+
+export async function handleRegister(
+  event,
+  registeredEvents,
+  setRegisteredEvents
+) {
+  if (registeredEvents[event.id]) {
+    const success = await unregisterForEvent(
+      event.id,
+      event.name,
+      event.employer.company_name
+    );
+    if (success) {
+      setRegisteredEvents({ ...registeredEvents, [event.id]: false });
+    }
+    return success;
+  } else {
+    const success = await registerForEvent(
+      event.id,
+      event.name,
+      event.employer.company_name
+    );
+    if (success) {
+      setRegisteredEvents({ ...registeredEvents, [event.id]: true });
+    }
+    return success;
+  }
+}
