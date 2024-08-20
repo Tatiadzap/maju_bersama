@@ -83,6 +83,17 @@ class EventRegistrationsController < ApplicationController
     end
   end
 
+  def destroy
+    @event_registration = current_user.event_registrations.find_by(event_id: params[:id])
+
+    if @event_registration
+      @event_registration.destroy
+      render json: { message: "Unregistered successfully" }, status: :ok
+    else
+      render json: { errors: ["Registration not found"] }, status: :not_found
+    end
+  end
+
   private
 
   def event_registration_params
