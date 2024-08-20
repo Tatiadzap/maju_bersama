@@ -1,58 +1,58 @@
 <script lang="ts">
   import { page } from '@inertiajs/svelte';
-  import { toast } from "svelte-sonner";
-  import { registerForEvent } from '$lib/eventRegistrationUtils';
-
+  import { handleRegister } from '$lib/eventRegistrationUtils';
   import { Button } from "$lib/components/ui/button";
   import dayjs from 'dayjs';
-  import { Link } from '@inertiajs/svelte';
 
+  // Data passed from Rails
   export let event;
-  export let employer;
-  export let company_details;
 
-  export let isRegistered;
-  const formattedStartDate = event.start_time ? dayjs(event.start_time).format('D MMMM YYYY, hh:mm A') : '';
-  const formattedEndDate = event.end_time ? dayjs(event.end_time).format('D MMMM YYYY, hh:mm A') : '';
+  // Extract employer and company_details from event
+  export let employer = event?.employer || {};
+  export let company_details = event?.company_details || {};
 
-  console.log(event.start_time)
+  // Manage the registration state similar to the index component
+  let registeredEvents = { [event.id]: event?.registered_by_current_user };
 
-  // Define local state
+  function setRegisteredEvents(updatedEvents) {
+    registeredEvents = updatedEvents;
+  }
+
+  // Authenticated user details
   const { auth } = $page.props;
   export let current_user = auth.user;
 
-  // Handle application (for similar functionality if needed)
-  async function handleRegister() {
-    const success = await registerForEvent(event.id, event.name, employer.company_name);
-    if (success) {
-      isRegistered = true;
-      toast.success('Application successful!');
-    } else {
-      toast.error('Application failed. Please try again.');
-    }
+  // Format start and end dates using dayjs
+  $: formattedStartDate = event?.start_time ? dayjs(event.start_time).format('D MMMM YYYY, hh:mm A') : '';
+  $: formattedEndDate = event?.end_time ? dayjs(event.end_time).format('D MMMM YYYY, hh:mm A') : '';
+
+  // Function to handle registration click
+  async function onRegisterClick() {
+    await handleRegister(event, registeredEvents, setRegisteredEvents);
   }
 </script>
 
+<!-- Component HTML -->
 <div class="flex justify-between py-12">
   <div class="flex space-x-4">
     <img src={company_details.profile_picture} alt="Company Logo" class="w-24 h-24">
     <div class="flex flex-col justify-center">
       <p class="text-xl font-medium">{event.name}</p>
       <div class="flex space-x-6">
-        <p>{employer.company_name}</p>
+        <p>{employer.company_name || "Unknown Company"}</p>
         <p>{event.location}</p>
         <p>{formattedStartDate}</p>
       </div>
     </div>
   </div>
 
-  <!-- Action Buttons -->
+  <!-- Registration or Edit Button -->
   {#if current_user.role === 'candidate'}
     <Button
-      class={`self-center ${isRegistered ? 'bg-green-600 text-white' : 'bg-blue-500 text-black'}`}
-      on:click={handleRegister}
+      class={`self-center ${registeredEvents[event.id] ? 'bg-green-600 text-white' : 'bg-blue-300 text-black'}`}
+      on:click={onRegisterClick}
     >
-      {isRegistered ? "Registered" : "Register"}
+      {registeredEvents[event.id] ? "Registered" : "Register"}
     </Button>
   {:else if current_user.role === 'employer'}
     <Button href={`/events/${event.id}/edit`} class="bg-blue-500 text-white">Edit Event</Button>
@@ -71,9 +71,8 @@
     <div class="space-y-2">
       <h2 class="mb-2 text-lg font-medium">Details</h2>
       <p>Location: {event.location}</p>
-      <p>Start: {formattedStartDate} </p>
+      <p>Start: {formattedStartDate}</p>
       <p>End: {formattedEndDate}</p>
-
     </div>
   </div>
 </div>

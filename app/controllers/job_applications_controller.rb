@@ -3,7 +3,6 @@ class JobApplicationsController < ApplicationController
 
   def index
     if current_user.role == 'candidate'
-      # Fetch job applications for the current candidate user
       @job_applications = JobApplication.includes(job: { employer: :user })
                                         .where(user_id: current_user.id)
                                         .order('job_applications.created_at DESC')
@@ -11,7 +10,7 @@ class JobApplicationsController < ApplicationController
         application.as_json(
           include: {
             job: {
-              only: [:id, :title, :location], # Add :id to be used in the URL for jobs
+              only: [:id, :title, :location],
               include: {
                 employer: {
                   only: [:id, :company_name],
@@ -28,7 +27,6 @@ class JobApplicationsController < ApplicationController
         )
       end
     elsif current_user.role == 'employer'
-      # Fetch job applications for jobs posted by the current employer
       @job_applications = JobApplication.includes(user: :candidate, job: { employer: :user })
                                         .where(job: { employer_id: current_user.employer.id })
                                         .order('job_applications.created_at DESC')
@@ -36,7 +34,7 @@ class JobApplicationsController < ApplicationController
         application.as_json(
           include: {
             job: {
-              only: [:id, :title, :location], # Ensure :id is included for the job
+              only: [:id, :title, :location],
               include: {
                 employer: {
                   only: [:id, :company_name],
@@ -82,6 +80,17 @@ class JobApplicationsController < ApplicationController
       else
         render json: { errors: job_application.errors.full_messages }, status: :unprocessable_entity
       end
+    end
+  end
+
+  def destroy
+    @job_application = current_user.job_applications.find_by(job_id: params[:id])
+
+    if @job_application
+      @job_application.destroy
+      render json: { message: 'unapplied' }, status: :ok
+    else
+      render json: { message: 'not_applied' }, status: :not_found
     end
   end
 

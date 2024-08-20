@@ -1,40 +1,42 @@
 class JobsController < ApplicationController
-  # include Auth
-  before_action :set_job, only: %i[show edit update]
+  include Auth
+
+  before_action :set_job, only: %i[show edit update destroy]
 
   def index
-    if current_user.role == 'employer'
-      @jobs = current_user.employer.jobs.includes(employer: :user).order(:created_at).map do |job|
-        job.as_json(
-          include: {
-            employer: {
-              only: [:id, :company_name],
-              include: {
-                user: { only: [:id, :profile_picture] }
-              }
+    @jobs = fetch_jobs.map do |job|
+      job.as_json(
+        include: {
+          employer: {
+            only: [:id, :company_name],
+            include: {
+              user: { only: [:id, :profile_picture] }
             }
           }
-        )
-        end
-    else
-      @jobs = Job.includes(employer: :user).order(:created_at).map do |job|
-        job.as_json(
-          include: {
-            employer: {
-              only: [:id, :company_name],
-              include: {
-                user: { only: [:id, :profile_picture] }
-              }
-            }
-          }
-        ).merge(applied_by_current_user: job_applied_by_current_user?(job.id))
-      end
+        }
+      ).merge(
+        applied_by_current_user: current_user.role == 'candidate' && job_applied_by_current_user?(job.id)
+      )
     end
   end
-
   def show
-    fetch_employer
-    @isApplied = job_applied_by_current_user?(@job.id)
+    @job_data = @job.as_json(
+      include: {
+        employer: {
+          only: [:id, :company_name],
+          include: {
+            user: { only: [:id, :profile_picture] }
+          }
+        }
+      }
+    ).merge(
+      applied_by_current_user: job_applied_by_current_user?(@job.id),
+      company_details: @job.employer.user
+    )
+
+    render inertia: 'jobs/show', props: {
+      job: @job_data
+    }
   end
 
   def new
@@ -64,6 +66,11 @@ class JobsController < ApplicationController
     end
   end
 
+  def destroy
+    @job.destroy
+    redirect_to jobs_path, notice: 'Job was successfully deleted.'
+  end
+
   private
 
   def set_job
@@ -71,17 +78,18 @@ class JobsController < ApplicationController
   end
 
   def job_params
-    params.require(:job).permit(:title, :location, :description, :requirements) # Use require to ensure job params
+    params.require(:job).permit(:title, :location, :description, :requirements)
   end
 
-  def fetch_employer
-    @employer = Employer.find(@job.employer_id)
-    @company_details = @employer.user
+  def fetch_jobs
+    if current_user.role == 'employer'
+      current_user.employer.jobs.includes(employer: :user).order(:created_at)
+    else
+      Job.includes(employer: :user).order(:created_at)
+    end
   end
 
   def job_applied_by_current_user?(job_id)
-    return false if current_user.nil? # Ensure this returns false when no user
-
-    JobApplication.exists?(job_id: job_id, user_id: current_user.id)
+    current_user && JobApplication.exists?(job_id: job_id, user_id: current_user.id)
   end
 end

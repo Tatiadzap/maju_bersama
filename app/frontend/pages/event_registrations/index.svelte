@@ -31,7 +31,9 @@
               <Avatar.Fallback></Avatar.Fallback>
             </Avatar.Root>
             <div class="self-center space-y-2">
-              <Card.Title class="text-xl font-bold">{registration.user.candidate.first_name} {registration.user.candidate.last_name}</Card.Title>
+              {#if user_role === 'employer'}
+                <Card.Title class="text-xl font-bold">{registration.user.candidate.first_name} {registration.user.candidate.last_name}</Card.Title>
+              {/if}
               <Card.Description class="text-sm font-bold">{registration.event.name}</Card.Description>
               <Card.Description class="text-sm">{registration.event.location}</Card.Description>
             </div>

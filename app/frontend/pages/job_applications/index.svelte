@@ -30,7 +30,10 @@
               <Avatar.Fallback></Avatar.Fallback>
             </Avatar.Root>
             <div class="self-center space-y-2">
-              <Card.Title class="text-xl font-bold">{application.user.candidate.first_name} {application.user.candidate.last_name}</Card.Title>
+              {#if user_role === 'employer'}
+                <Card.Title class="text-xl font-bold">{application.user.candidate.first_name} {application.user.candidate.last_name}</Card.Title>
+              {/if}
+
               <Card.Description class="text-sm font-bold">{application.job.title}</Card.Description>
               <Card.Description class="text-sm">{application.job.location}</Card.Description>
             </div>
