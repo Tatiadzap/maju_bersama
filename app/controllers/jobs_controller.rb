@@ -30,7 +30,6 @@ class JobsController < ApplicationController
         ).merge(applied_by_current_user: job_applied_by_current_user?(job.id))
       end
     end
-
   end
 
   def show

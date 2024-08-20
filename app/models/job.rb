@@ -14,6 +14,5 @@ class Job < ApplicationRecord
   # Helper method to fetch status options
   def self.status_options
     %w[Open Closed On_Hold Draft]
-end
-
+  end
 end

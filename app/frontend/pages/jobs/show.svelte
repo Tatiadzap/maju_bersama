@@ -24,7 +24,7 @@
 
 <div class="flex justify-between py-12">
   <div class="flex space-x-4">
-    <img src={company_details.profile_picture} alt="Profile Picture" class="w-24 h-24">
+    <img src={company_details.profile_picture} alt="company_logo" class="w-24 h-24">
     <div class="flex flex-col justify-center">
       <p class="text-xl font-medium">{job.title}</p>
       <div class="flex space-x-6">
