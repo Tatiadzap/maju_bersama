@@ -114,6 +114,5 @@
         </Menubar.Menu>
       {/if}
     </div>
-
   </Menubar.Root>
 </nav>
