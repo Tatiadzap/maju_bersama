@@ -22,8 +22,6 @@
       profilePath = `/employers/${employer.id}`;
     }
   }
-
-  console.log(current_user.role)
 </script>
 
 <nav class="flex justify-between p-6 mx-auto w-full items-center">
