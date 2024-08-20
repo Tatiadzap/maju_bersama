@@ -47,7 +47,6 @@
               Registered on {new Date(registration.created_at).toLocaleDateString()}
             </div>
           {/if}
-
         </Card.Footer>
       </div>
     </Card.Root>
