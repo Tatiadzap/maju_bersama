@@ -4,9 +4,11 @@
   export let toggleNewForm; // Accept the toggleNewForm function as a prop
 
   let form = useForm({
-    title: null,
-    description: null,
-    start_date: null
+    name: '',
+    description: '',
+    location: '',
+    start_time: null, // Using null initially for date
+    end_time: null
   });
 
   async function submit() {
@@ -22,37 +24,92 @@
     if (toggleNewForm) {
       toggleNewForm();
     } else {
-      router.visit('/events') // Hide the form when cancel is clicked
+      router.visit('/events'); // Redirect to events page when cancel is clicked
     }
   }
 </script>
 
-<form on:submit|preventDefault={submit}>
+<div class="max-w-xl p-8 mx-auto mb-24">
+  <h1 class="mb-6 text-2xl font-bold">Create a New Event</h1>
+  <form on:submit|preventDefault={submit}>
 
-  <div>
-    <label for="title">Title</label>
-    <input type="text" bind:value={$form.title} />
-    {#if $form.errors.title}
-      <div class="form-error">{$form.errors.title}</div>
-    {/if}
-  </div>
+    <div class="mb-4">
+      <label for="name" class="block mb-2 text-sm font-medium">Title</label>
+      <input
+        type="text"
+        bind:value={$form.name}
+        id="name"
+        class="block w-full p-2 mt-1 border rounded-md shadow-sm focus:ring focus:border sm:text-sm"
+      />
+      {#if $form.errors.name}
+        <div class="form-error">{$form.errors.name}</div>
+      {/if}
+    </div>
 
-  <div>
-    <label for="description">Description</label>
-    <input type="text" bind:value={$form.description} />
-    {#if $form.errors.description}
-      <div class="form-error">{$form.errors.description}</div>
-    {/if}
-  </div>
+    <div class="mb-4">
+      <label for="location" class="block mb-2 text-sm font-medium">Location</label>
+      <input
+        type="text"
+        bind:value={$form.location}
+        id="location"
+        class="block w-full p-2 mt-1 border rounded-md shadow-sm focus:ring focus:border sm:text-sm"
+      />
+      {#if $form.errors.location}
+        <div class="form-error">{$form.errors.location}</div>
+      {/if}
+    </div>
 
-  <div>
-    <label for="start_date">Start Date</label>
-    <input id="start_date" type="datetime-local" bind:value={$form.start_date} />
-    {#if $form.errors.start_date}
-      <div class="form-error">{$form.errors.start_date}</div>
-    {/if}
-  </div>
+    <div class="mb-4">
+      <label for="description" class="block mb-2 text-sm font-medium">Description</label>
+      <textarea
+        bind:value={$form.description}
+        id="description"
+        class="block w-full p-2 mt-1 border rounded-md shadow-sm focus:ring focus:border sm:text-sm"
+      ></textarea>
+      {#if $form.errors.description}
+        <div class="form-error">{$form.errors.description}</div>
+      {/if}
+    </div>
 
-  <button type="submit" disabled={$form.processing}>Submit</button>
-  <button type="button" on:click={cancel}>Cancel</button>
-</form>
+    <div class="mb-4">
+      <label for="start_time" class="block mb-2 text-sm font-medium">Start Time</label>
+      <input
+        id="start_time"
+        type="datetime-local"
+        bind:value={$form.start_time}
+        class="block w-full p-2 mt-1 border rounded-md shadow-sm focus:ring focus:border sm:text-sm"
+      />
+      {#if $form.errors.start_time}
+        <div class="form-error">{$form.errors.start_time}</div>
+      {/if}
+    </div>
+
+    <div class="mb-4">
+      <label for="end_time" class="block mb-2 text-sm font-medium">End Time</label>
+      <input
+        id="end_time"
+        type="datetime-local"
+        bind:value={$form.end_time}
+        class="block w-full p-2 mt-1 border rounded-md shadow-sm focus:ring focus:border sm:text-sm"
+      />
+      {#if $form.errors.end_time}
+        <div class="form-error">{$form.errors.end_time}</div>
+      {/if}
+    </div>
+
+    <button
+      type="submit"
+      disabled={$form.processing}
+      class="bg-blue-500 text-white py-2 px-4 rounded-md shadow-sm hover:bg-blue-600"
+    >
+      Submit
+    </button>
+    <button
+      type="button"
+      on:click={cancel}
+      class="ml-4 bg-gray-500 text-white py-2 px-4 rounded-md shadow-sm hover:bg-gray-600"
+    >
+      Cancel
+    </button>
+  </form>
+</div>

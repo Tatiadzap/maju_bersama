@@ -47,7 +47,10 @@
       <!-- <div>{$page.props.auth.user.first_name}</div> -->
       {#if current_user.role === 'employer'}
         <Link href="/jobs/new">+ New Job</Link>
+        <Link href="/events/new">+ New Event</Link>
+
       {/if}
+
 
       <DropdownMenu.Root>
         <DropdownMenu.Trigger asChild let:builder>

@@ -43,8 +43,11 @@ class EventsController < ApplicationController
 
   def create
     event = Event.new(event_params)
+    event.employer = current_user.employer
+    event.status = "Open" # Ensure this association is correct
+
     if event.save
-      redirect_to events_path, notice: 'Event created.'
+      redirect_to event_path(event), notice: 'Event created.'
     else
       redirect_to new_event_path, inertia: { errors: event.errors }
     end
@@ -74,7 +77,7 @@ class EventsController < ApplicationController
   end
 
   def event_params
-    params.fetch(:event, {}).permit(:name, :description, :start_date)
+    params.fetch(:event, {}).permit(:name, :description, :start_time, :end_time)
   end
 
   def fetch_employer
