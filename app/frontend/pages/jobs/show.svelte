@@ -1,20 +1,27 @@
 <script lang="ts">
   import { page } from '@inertiajs/svelte';
-  import { applyForJob } from '$lib/jobApplicationUtils';
+  import { applyForJob, unapplyForJob } from '$lib/jobApplicationUtils';
   import { Button } from "$lib/components/ui/button";
 
   export let job;
-  export let employer;
-  export let company_details;
+  export let employer = job?.employer || {};
+  export let company_details = job?.company_details || {};
 
-  // Local state to track if the job is applied
-  export let isApplied
-  console.log(isApplied)
+  console.log(employer)
+
+  let isApplied = job.applied_by_current_user;
 
   async function handleApply() {
-    const success = await applyForJob(job.id, job.title, employer.company_name);
-    if (success) {
-      isApplied = true;
+    if (isApplied) {
+      const success = await unapplyForJob(job.id, job.title, employer.company_name);
+      if (success) {
+        isApplied = false;
+      }
+    } else {
+      const success = await applyForJob(job.id, job.title, employer.company_name);
+      if (success) {
+        isApplied = true;
+      }
     }
   }
 
@@ -28,7 +35,7 @@
     <div class="flex flex-col justify-center">
       <p class="text-xl font-medium">{job.title}</p>
       <div class="flex space-x-6">
-        <p>{employer.company_name}</p>
+        <!-- <p>{employer.company_name}</p> -->
         <p>{job.location}</p>
         <p>Full-time</p>
         <p>{job.status}</p>
@@ -36,7 +43,6 @@
     </div>
   </div>
 
-  <!-- Apply Button -->
   {#if current_user.role === 'candidate'}
     <Button
       class={`self-center ${isApplied ? 'bg-green-600 text-white' : 'bg-blue-500 text-black'}`}
@@ -45,9 +51,8 @@
       {isApplied ? "Applied" : "Apply"}
     </Button>
   {:else if current_user.role === 'employer'}
-    <Button href="/jobs/{job.id}/edit"> Edit Job </Button>
+    <Button href={`/jobs/${job.id}/edit`} class="bg-blue-500 text-white"> Edit Job </Button>
   {/if}
-
 </div>
 
 <div class="w-full h-0.5 bg-gray-200"></div>

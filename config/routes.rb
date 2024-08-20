@@ -30,7 +30,7 @@ Rails.application.routes.draw do
   resources :candidates
   resources :employers
   resources :jobs
-  resources :job_applications, only: [:index, :create]
+  resources :job_applications, only: [:index, :create, :destroy]
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
   # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.

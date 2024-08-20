@@ -1,7 +1,6 @@
 class EventsController < ApplicationController
   include Auth
 
-  # Ensure set_event is only called on actions that need it
   before_action :set_event, only: %i[show edit update destroy]
 
   def index
@@ -22,7 +21,6 @@ class EventsController < ApplicationController
   end
 
   def show
-    @event = Event.find(params[:id])
     @event_data = @event.as_json(
       include: {
         employer: {
@@ -81,7 +79,7 @@ class EventsController < ApplicationController
   end
 
   def event_params
-    params.require(:event).permit(:name, :description, :start_time, :end_time)
+    params.require(:event).permit(:name, :location, :description, :start_time, :end_time)
   end
 
   def fetch_events
