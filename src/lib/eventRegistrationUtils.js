@@ -41,3 +41,31 @@ export async function registerForEvent(eventId, eventName, companyName) {
     return false;
   }
 }
+
+export async function unregisterForEvent(eventId, eventName, companyName) {
+  try {
+    const response = await fetch(`/event_registrations/${eventId}`, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+        "X-CSRF-Token": document
+          .querySelector('meta[name="csrf-token"]')
+          .getAttribute("content"),
+      },
+    });
+
+    if (response.ok) {
+      toast.success(`Unregistered from ${eventName} at ${companyName}.`);
+      return true;
+    } else {
+      const errorData = await response.json();
+      toast.error(
+        `Failed to unregister: ${errorData.errors ? errorData.errors.join(", ") : "Unknown error"}`
+      );
+      return false;
+    }
+  } catch (error) {
+    toast.error(`An error occurred: ${error.message}`);
+    return false;
+  }
+}
