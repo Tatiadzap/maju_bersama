@@ -21,8 +21,8 @@
   </div>
 
   <div>
-    <h2 class="mb-4 text-lg font-bold">{employer.company_name}
-    <p class="font-light">Website: {employer.website}</p>
+    <h2 class="mb-4 text-lg font-bold">{employer.company_name}</h2>
+    <a href="{employer.website}" class="font-light">Website: {employer.website}</a>
     <p class="font-light">Industry: {employer.industry}</p>
     <p class="font-light">Email: {user.email}</p>
     <p class="font-light">Phone: {user.phone}</p>

@@ -12,8 +12,6 @@
   export let experiences
   export let educations
 
-  console.log(candidate.languages)
-
   // Utility functions
   function formatDate(date, format) {
     return dayjs(date).isValid() ? dayjs(date).format(format) : 'Invalid date';
@@ -21,11 +19,12 @@
 </script>
 
 <Card class="p-6 mb-4 border-none shadow-none">
-  <div>
+  <div class="flex justify-between">
     <Avatar.Root>
       <Avatar.Image src="https://github.com/shadcn.png" alt="@shadcn"/>
       <Avatar.Fallback>{candidate.first_name}</Avatar.Fallback>
     </Avatar.Root>
+    <Link href="{candidate.id}/edit">Edit profile</Link>
   </div>
   <div>
     <h2 class="mb-4 text-lg font-bold">{candidate.first_name} {candidate.last_name}</h2>

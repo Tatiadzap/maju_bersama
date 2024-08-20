@@ -16,8 +16,10 @@
 <Toaster />
 
 <div>
-  <MainNav />
   <main>
+    <div class="'px-4 mx-auto max-w-7xl sm:px-8 py-4'">
+      <MainNav />
+    </div>
     <div class={ignoreStyles ? '' : 'px-4 mx-auto max-w-7xl sm:px-8 py-4'}>
       <slot ignoreStyles={ignoreStyles} />
     </div>
