@@ -40,6 +40,9 @@
     <li>
       <Link href="/job_applications">Job Applications</Link>
     </li>
+    <li>
+      <Link href="/event_registrations">Event Registrations</Link>
+    </li>
   </ul>
 
   <div class="flex items-center space-x-2">

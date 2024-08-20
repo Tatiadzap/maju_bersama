@@ -1,11 +1,14 @@
 <script lang="ts">
+  import { page } from '@inertiajs/svelte';
   import { Button } from "$lib/components/ui/button/index.js";
   import * as Card from "$lib/components/ui/card/index.js";
   import * as Avatar from "$lib/components/ui/avatar";
-  import { registerForEvent } from '$lib/eventRegistrationUtils';
+  import { registerForEvent, unregisterForEvent } from '$lib/eventRegistrationUtils';
 
   export let events;
   export let current_user;
+
+  export let user_role = $page.props.auth.user.role;
 
   let registeredEvents = {};
 
@@ -14,14 +17,29 @@
   });
 
   async function handleRegister(event) {
+  if (registeredEvents[event.id]) {
+    const success = await unregisterForEvent(event.id, event.name, event.employer.company_name);
+    if (success) {
+      console.log("unregister event")
+
+      registeredEvents = { ...registeredEvents, [event.id]: false };
+    }
+  } else {
     const success = await registerForEvent(event.id, event.name, event.employer.company_name);
     if (success) {
       registeredEvents = { ...registeredEvents, [event.id]: true };
     }
   }
+}
+
 </script>
 
-<h1 class="mx-auto my-24 text-5xl text-center">Discover the <span class="text-red-500">Best Events</span></h1>
+{#if user_role === 'candidate'}
+  <h1 class="mx-auto my-24 text-5xl text-center">Discover the <span class="text-red-500">Best Events</span></h1>
+{:else if user_role === 'employer'}
+  <h1 class="mx-auto my-24 text-5xl text-center">Your <span class="text-red-500">Events </span></h1>
+{/if}
+
 
 <div class="grid grid-cols-1 gap-4">
   {#each events as event}
@@ -41,6 +59,7 @@
           </Card.Header>
           <Card.Footer class="flex justify-end pb-4 border-gray-200">
             <Button href={`/events/${event.id}`} variant="outline" class="mr-2">More Details</Button>
+
             {#if current_user.role === 'candidate'}
               <Button
                 class={`self-center ${registeredEvents[event.id] ? 'bg-green-600 text-white' : ''}`}
@@ -48,6 +67,7 @@
               >
                 {registeredEvents[event.id] ? "Registered" : "Register"}
               </Button>
+
             {:else if current_user.role === 'employer'}
               <Button href="/events/{event.id}/edit"> Edit Event </Button>
             {/if}

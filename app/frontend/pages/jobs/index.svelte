@@ -26,7 +26,12 @@
   }
 </script>
 
-<h1 class="mx-auto my-24 text-5xl text-center">Discover the <span class="text-red-500">Best Jobs</span></h1>
+
+{#if current_user.role === 'candidate'}
+  <h1 class="mx-auto my-24 text-5xl text-center">Discover the <span class="text-red-500">Best Jobs</span></h1>
+{:else if current_user.role === 'employer'}
+  <h1 class="mx-auto my-24 text-5xl text-center">Your <span class="text-red-500">Job postings </span></h1>
+{/if}
 
 <div class="grid grid-cols-1 gap-4">
   {#each jobs as job}

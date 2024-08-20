@@ -10,8 +10,11 @@
   console.log(job_applications); // Debugging to check the data structure
 </script>
 
-<h1 class="mx-auto my-24 text-5xl text-center">My <span class="text-red-500">Job Applications</span></h1>
-
+{#if user_role === 'candidate'}
+  <h1 class="mx-auto my-24 text-5xl text-center">My <span class="text-red-500">Job Applications</span></h1>
+{:else if user_role === 'employer'}
+  <h1 class="mx-auto my-24 text-5xl text-center">Incoming <span class="text-red-500">applications </span></h1>
+{/if}
 <div class="grid grid-cols-1 gap-4">
   {#each job_applications as application}
     <Card.Root class="w-full max-w-full overflow-hidden rounded-lg shadow-lg">
@@ -34,8 +37,11 @@
           </div>
         </Card.Header>
         <Card.Footer class="flex justify-end pb-4 border-gray-200">
+
+          <Button href={`/jobs/${application.job.id}`} variant="outline" class="mr-2">Job Listing</Button>
+
           {#if user_role === 'employer'}
-            <Button href={`/candidates/${application.user.candidate.id}`} variant="outline" class="mr-2">Applicant Details</Button>
+            <Button href={`/candidates/${application.user.candidate.id}`} class="mr-2">View Applicant</Button>
           {/if}
           {#if user_role === 'candidate'}
             <div class="self-center font-bold text-green-600">
