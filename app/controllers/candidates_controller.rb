@@ -2,11 +2,13 @@ class CandidatesController < ApplicationController
   before_action :set_candidate, only: %i[ show edit update ]
 
   def show
-    fetch_experience
-    fetch_education
+    set_experience
+    set_education
   end
 
   def edit
+    set_experience
+    set_education
   end
 
   def update
@@ -27,11 +29,11 @@ class CandidatesController < ApplicationController
     @user = @candidate.user
   end
 
-  def fetch_experience
+  def set_experience
     @experiences = Experience.where(candidate: @candidate).order(end_date: :desc)
   end
 
-  def fetch_education
+  def set_education
     @educations = Education.where(candidate: @candidate).order(end_date: :desc)
   end
 
