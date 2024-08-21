@@ -20,7 +20,7 @@ module Auth
     when 'candidate'
       edit_candidate_path(resource.candidate)
     when 'employer'
-      employer_path(resource.employer)
+      edit_employer_path(resource.employer)
     else
       stored_location_for(resource) || root_path
     end
