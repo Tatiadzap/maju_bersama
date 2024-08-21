@@ -80,8 +80,8 @@
   }
 
   function submit() {
-    console.log('Submitting form');
-    form.put(`/candidates/${candidate.id}`);
+    console.log(candidate.id);
+    $form.put(`/candidates/${candidate.id}`);
   }
 
   // Reactive variables for title and description based on the current step
