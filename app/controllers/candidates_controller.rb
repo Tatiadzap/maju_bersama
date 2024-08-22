@@ -57,7 +57,6 @@ class CandidatesController < ApplicationController
     @candidate.experiences.where.not(id: submitted_experience_ids).destroy_all
   end
 
-
   def candidate_params
     params.require(:candidate).permit(
       :first_name, :last_name, :date_of_birth, languages: [],

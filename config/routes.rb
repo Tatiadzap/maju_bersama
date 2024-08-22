@@ -28,7 +28,7 @@ Rails.application.routes.draw do
   resources :event_registrations, only: [:index, :create, :destroy]
 
   resources :candidates do
-  resources :experiences, only: [:create, :update]
+    resources :experiences, only: [:create, :update]
   end
   resources :employers
   resources :jobs

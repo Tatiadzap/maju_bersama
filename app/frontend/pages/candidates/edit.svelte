@@ -1,6 +1,6 @@
 <script lang="ts">
   import { Button } from "$lib/components/ui/button";
-  import * as Card from "$lib/components/ui/card"
+  import * as Card from "$lib/components/ui/card";
   import { Input } from "$lib/components/ui/input";
   import { Label } from "$lib/components/ui/label";
   import { Textarea } from "$lib/components/ui/textarea";
@@ -87,24 +87,34 @@
 
   async function saveExperience() {
     try {
-      let response;
+        let response;
 
-      if (!editingExperience.id) {
-        // Create new experience in the backend
-        response = await axios.post(`/candidates/${candidate.id}/experiences`, editingExperience);
-        $form.experiences = [...$form.experiences, { ...response.data }];
-      } else {
-        // Update existing experience in the backend
-        response = await axios.put(`/experiences/${editingExperience.id}`, editingExperience);
-        $form.experiences = $form.experiences.map(exp => exp.id === editingExperience.id ? { ...response.data } : exp);
-      }
+        if (!editingExperience.id) {
+            // Create new experience in the backend
+            response = await axios.post(`/candidates/${candidate.id}/experiences`, editingExperience);
+            $form.experiences = [...$form.experiences, { ...response.data }];
+        } else {
+            // Update existing experience in the backend
+            if (!editingExperience.id) {
+                throw new Error("Experience ID is missing for update.");
+            }
+            // Note: We include the candidate ID and the experience ID in the URL
+            response = await axios.put(`/candidates/${candidate.id}/experiences/${editingExperience.id}`, editingExperience);
+            $form.experiences = $form.experiences.map(exp => exp.id === editingExperience.id ? { ...response.data } : exp);
+        }
 
-      showForm = false;
-      editingExperience = null;
+        showForm = false;
+        editingExperience = null;
     } catch (error) {
-      console.error('Failed to save experience:', error);
+        console.error('Failed to save experience:', error);
+        if (error.response && error.response.status === 404) {
+            console.error('The requested endpoint was not found. Please check the API route.');
+        } else {
+            console.error('An error occurred:', error.message);
+        }
     }
-  }
+}
+
 
   function editExperience(experience) {
     editingExperience = { ...experience };
@@ -124,7 +134,6 @@
     $form.put(`/candidates/${candidate.id}`, {
       onSuccess: () => {
         console.log('Form submitted successfully');
-        // Optionally redirect or show a success message
       },
       onError: (errors) => {
         console.error('Form submission failed', errors);
@@ -132,11 +141,10 @@
     });
   }
 
-    // Reactive variables for title and description based on the current step
+  // Reactive variables for title and description based on the current step
   $: cardTitle = steps[currentStep].title;
   $: cardDescription = steps[currentStep].description;
 </script>
-
 
 <div class="flex">
   <!-- Sidebar for step navigation -->
@@ -266,23 +274,12 @@
                   {/if}
                 </div>
               {:else if currentStep === 3}
-              <!-- Experiences Step -->
+                <!-- Experiences Step -->
                 <div>
-                  <!-- List of existing experiences -->
-                  {#each $form.experiences as experience, index (experience.id)}
-                    <div class="mb-4 p-4 border rounded-md">
-                      <h4>{experience.job_title} at {experience.company_name}</h4>
-                      <p>{experience.start_date} to {experience.end_date}</p>
-                      <p>{experience.description}</p>
-                      <Button type="button" on:click={() => editExperience(experience)}>Edit</Button>
-                    </div>
-                  {/each}
-
                   <!-- Add new experience button -->
                   {#if !showForm}
                     <Button type="button" on:click={addExperience}>Add New Experience</Button>
                   {/if}
-
                   <!-- Experience form -->
                   {#if showForm}
                     <div class="mb-4 p-4 border rounded-md space-y-4">
@@ -317,6 +314,16 @@
                       </div>
                     </div>
                   {/if}
+                  <!-- List of existing experiences -->
+                  {#each $form.experiences as experience, index (experience.id)}
+                    <div class="mb-4 p-4 border rounded-md space-y-2">
+                      <h4>{experience.job_title}</h4>
+                      <p class="font-semibold text-gray-500">{experience.company_name}</p>
+                      <p>{experience.start_date} to {experience.end_date}</p>
+                      <p>{experience.description}</p>
+                      <Button type="button" on:click={() => editExperience(experience)}>Edit</Button>
+                    </div>
+                  {/each}
                 </div>
               {/if}
             </div>
