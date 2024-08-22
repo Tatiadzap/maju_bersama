@@ -1,0 +1,2 @@
+class UserDisabilitiesController < ApplicationController
+end
