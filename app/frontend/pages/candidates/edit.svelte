@@ -1,16 +1,15 @@
 <script lang="ts">
-  import { cubicInOut } from "svelte/easing";
-  import { crossfade } from "svelte/transition";
   import { Button } from "$lib/components/ui/button";
   import * as Card from "$lib/components/ui/card";
   import { Input } from "$lib/components/ui/input";
   import { Label } from "$lib/components/ui/label";
   import { Textarea } from "$lib/components/ui/textarea";
-  import { useForm, page } from "@inertiajs/svelte";
-  import { onMount } from "svelte";
+  import { useForm } from "@inertiajs/svelte";
+  import axios from 'axios';
 
   export let candidate = null;
   export let user = null;
+  export let experiences = [];
 
   let form = useForm({
     candidate: {
@@ -27,10 +26,14 @@
       zip_code: user?.zip_code || '',
       country: user?.country || '',
       bio: user?.bio || '',
-    }
+    },
+    experiences: experiences || [],  // Adding experiences array
   });
 
   let currentStep = 0;
+  let editingExperience = null;
+  let showForm = false;
+
   const steps = [
     {
       href: '#personal-info',
@@ -46,22 +49,13 @@
       href: '#additional-info',
       title: 'Additional Info',
       description: 'Provide additional information about yourself.',
+    },
+    {
+      href: '#experiences',
+      title: 'Experiences',
+      description: 'Add and update your job experiences.',
     }
   ];
-
-  // Update current step based on hash on mount
-  onMount(() => {
-    const hash = $page.url.hash;
-    const index = steps.findIndex(step => step.href === hash);
-    if (index !== -1) {
-      currentStep = index;
-    }
-  });
-
-  const [send, receive] = crossfade({
-    duration: 250,
-    easing: cubicInOut,
-  });
 
   function handleStepChange(step: number) {
     currentStep = step;
@@ -79,9 +73,72 @@
     }
   }
 
+  function addExperience() {
+    showForm = true;
+    editingExperience = {
+      id: null,
+      job_title: '',
+      company_name: '',
+      start_date: '',
+      end_date: '',
+      description: '',
+    };
+  }
+
+  async function saveExperience() {
+    try {
+        let response;
+
+        if (!editingExperience.id) {
+            // Create new experience in the backend
+            response = await axios.post(`/candidates/${candidate.id}/experiences`, editingExperience);
+            $form.experiences = [...$form.experiences, { ...response.data }];
+        } else {
+            // Update existing experience in the backend
+            if (!editingExperience.id) {
+                throw new Error("Experience ID is missing for update.");
+            }
+            // Note: We include the candidate ID and the experience ID in the URL
+            response = await axios.put(`/candidates/${candidate.id}/experiences/${editingExperience.id}`, editingExperience);
+            $form.experiences = $form.experiences.map(exp => exp.id === editingExperience.id ? { ...response.data } : exp);
+        }
+
+        showForm = false;
+        editingExperience = null;
+    } catch (error) {
+        console.error('Failed to save experience:', error);
+        if (error.response && error.response.status === 404) {
+            console.error('The requested endpoint was not found. Please check the API route.');
+        } else {
+            console.error('An error occurred:', error.message);
+        }
+    }
+}
+
+
+  function editExperience(experience) {
+    editingExperience = { ...experience };
+    showForm = true;
+  }
+
+  function cancelEdit() {
+    showForm = false;
+    editingExperience = null;
+  }
+
   function submit() {
-    console.log(candidate.id);
-    $form.put(`/candidates/${candidate.id}`);
+    // Log the current experiences array to see what's being submitted
+    console.log($form.experiences);
+
+    // Handle form submission using Inertia's form handling
+    $form.put(`/candidates/${candidate.id}`, {
+      onSuccess: () => {
+        console.log('Form submitted successfully');
+      },
+      onError: (errors) => {
+        console.error('Form submission failed', errors);
+      }
+    });
   }
 
   // Reactive variables for title and description based on the current step
@@ -216,9 +273,104 @@
                     <div class="text-sm text-red-500">{$form.errors['user.bio']}</div>
                   {/if}
                 </div>
+              {:else if currentStep === 3}
+                <!-- Experiences Step -->
+                <div class="space-y-6">
+                  <!-- Add new experience button -->
+                  {#if !showForm}
+                    <Button type="button" on:click={addExperience}>+ Add New Experience</Button>
+                  {/if}
+
+                  <!-- Experience form for adding a new experience -->
+                  {#if showForm && !editingExperience.id}
+                  <div class="mb-4 p-4 border rounded-md space-y-4">
+                    <div>
+                      <Label for="job_title">Job Title</Label>
+                      <Input id="job_title" bind:value={editingExperience.job_title} placeholder="Job Title" />
+                    </div>
+
+                    <div>
+                      <Label for="company_name">Company Name</Label>
+                      <Input id="company_name" bind:value={editingExperience.company_name} placeholder="Company Name" />
+                    </div>
+
+                    <div>
+                      <Label for="start_date">Start Date</Label>
+                      <Input id="start_date" type="date" bind:value={editingExperience.start_date} />
+                    </div>
+
+                    <div>
+                      <Label for="end_date">End Date</Label>
+                      <Input id="end_date" type="date" bind:value={editingExperience.end_date} />
+                    </div>
+
+                    <div>
+                      <Label for="description">Description</Label>
+                      <Textarea id="description" bind:value={editingExperience.description} placeholder="Job Description" />
+                    </div>
+
+                    <div class="flex justify-between">
+                      <Button type="button" on:click={saveExperience} color="blue">Save Experience</Button>
+                      <Button type="button" on:click={cancelEdit} color="gray">Cancel</Button>
+                    </div>
+                  </div>
+                  {/if}
+                  <!-- List of existing experiences -->
+                  {#each $form.experiences as experience, index (experience.id)}
+                    <div class="mb-4 p-4 border rounded-md space-y-2">
+                      {#if editingExperience && editingExperience.id === experience.id}
+                        <!-- Experience form for editing -->
+                        <div class="space-y-4">
+                          <div>
+                            <Label for="job_title">Job Title</Label>
+                            <Input id="job_title" bind:value={editingExperience.job_title} placeholder="Job Title" />
+                          </div>
+
+                          <div>
+                            <Label for="company_name">Company Name</Label>
+                            <Input id="company_name" bind:value={editingExperience.company_name} placeholder="Company Name" />
+                          </div>
+
+                          <div>
+                            <Label for="start_date">Start Date</Label>
+                            <Input id="start_date" type="date" bind:value={editingExperience.start_date} />
+                          </div>
+
+                          <div>
+                            <Label for="end_date">End Date</Label>
+                            <Input id="end_date" type="date" bind:value={editingExperience.end_date} />
+                          </div>
+
+                          <div>
+                            <Label for="description">Description</Label>
+                            <Textarea id="description" bind:value={editingExperience.description} placeholder="Job Description" />
+                          </div>
+
+                          <div class="flex justify-between">
+                            <Button type="button" on:click={cancelEdit} color="gray">Cancel</Button>
+
+                            <Button type="button" on:click={saveExperience} color="blue">Save Experience</Button>
+                          </div>
+                        </div>
+                      {:else}
+                        <!-- Display the experience -->
+                        <div class="flex justify-between items-start">
+                          <div>
+                            <h4>{experience.job_title}</h4>
+                            <p class="font-semibold text-gray-500">{experience.company_name}</p>
+                            <p>{experience.start_date} to {experience.end_date}</p>
+                            <p>{experience.description}</p>
+                          </div>
+                          <Button type="button" class="ml-4" on:click={() => editExperience(experience)}>Edit</Button>
+                        </div>
+
+                      {/if}
+                    </div>
+                  {/each}
+
+                </div>
               {/if}
             </div>
-
             <Card.Footer class="px-0 py-4 border-t">
               <div class="flex justify-between">
                 {#if currentStep > 0}
