@@ -275,10 +275,10 @@
                 </div>
               {:else if currentStep === 3}
                 <!-- Experiences Step -->
-                <div>
+                <div class="space-y-6">
                   <!-- Add new experience button -->
                   {#if !showForm}
-                    <Button type="button" on:click={addExperience}>Add New Experience</Button>
+                    <Button type="button" on:click={addExperience}>+ Add New Experience</Button>
                   {/if}
 
                   <!-- Experience form for adding a new experience -->
@@ -314,7 +314,7 @@
                       <Button type="button" on:click={cancelEdit} color="gray">Cancel</Button>
                     </div>
                   </div>
-                {/if}
+                  {/if}
                   <!-- List of existing experiences -->
                   {#each $form.experiences as experience, index (experience.id)}
                     <div class="mb-4 p-4 border rounded-md space-y-2">
@@ -347,19 +347,23 @@
                           </div>
 
                           <div class="flex justify-between">
-                            <Button type="button" on:click={saveExperience} color="blue">Save Experience</Button>
                             <Button type="button" on:click={cancelEdit} color="gray">Cancel</Button>
+
+                            <Button type="button" on:click={saveExperience} color="blue">Save Experience</Button>
                           </div>
                         </div>
                       {:else}
                         <!-- Display the experience -->
-                        <div>
-                          <h4>{experience.job_title}</h4>
-                          <p class="font-semibold text-gray-500">{experience.company_name}</p>
-                          <p>{experience.start_date} to {experience.end_date}</p>
-                          <p>{experience.description}</p>
-                          <Button type="button" on:click={() => editExperience(experience)}>Edit</Button>
+                        <div class="flex justify-between items-start">
+                          <div>
+                            <h4>{experience.job_title}</h4>
+                            <p class="font-semibold text-gray-500">{experience.company_name}</p>
+                            <p>{experience.start_date} to {experience.end_date}</p>
+                            <p>{experience.description}</p>
+                          </div>
+                          <Button type="button" class="ml-4" on:click={() => editExperience(experience)}>Edit</Button>
                         </div>
+
                       {/if}
                     </div>
                   {/each}
