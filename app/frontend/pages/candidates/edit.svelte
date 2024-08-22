@@ -280,50 +280,90 @@
                   {#if !showForm}
                     <Button type="button" on:click={addExperience}>Add New Experience</Button>
                   {/if}
-                  <!-- Experience form -->
-                  {#if showForm}
-                    <div class="mb-4 p-4 border rounded-md space-y-4">
-                      <div>
-                        <Label for="job_title">Job Title</Label>
-                        <Input id="job_title" bind:value={editingExperience.job_title} placeholder="Job Title" />
-                      </div>
 
-                      <div>
-                        <Label for="company_name">Company Name</Label>
-                        <Input id="company_name" bind:value={editingExperience.company_name} placeholder="Company Name" />
-                      </div>
-
-                      <div>
-                        <Label for="start_date">Start Date</Label>
-                        <Input id="start_date" type="date" bind:value={editingExperience.start_date} />
-                      </div>
-
-                      <div>
-                        <Label for="end_date">End Date</Label>
-                        <Input id="end_date" type="date" bind:value={editingExperience.end_date} />
-                      </div>
-
-                      <div>
-                        <Label for="description">Description</Label>
-                        <Textarea id="description" bind:value={editingExperience.description} placeholder="Job Description" />
-                      </div>
-
-                      <div class="flex justify-between">
-                        <Button type="button" on:click={saveExperience} color="blue">Save Experience</Button>
-                        <Button type="button" on:click={cancelEdit} color="gray">Cancel</Button>
-                      </div>
+                  <!-- Experience form for adding a new experience -->
+                  {#if showForm && !editingExperience.id}
+                  <div class="mb-4 p-4 border rounded-md space-y-4">
+                    <div>
+                      <Label for="job_title">Job Title</Label>
+                      <Input id="job_title" bind:value={editingExperience.job_title} placeholder="Job Title" />
                     </div>
-                  {/if}
+
+                    <div>
+                      <Label for="company_name">Company Name</Label>
+                      <Input id="company_name" bind:value={editingExperience.company_name} placeholder="Company Name" />
+                    </div>
+
+                    <div>
+                      <Label for="start_date">Start Date</Label>
+                      <Input id="start_date" type="date" bind:value={editingExperience.start_date} />
+                    </div>
+
+                    <div>
+                      <Label for="end_date">End Date</Label>
+                      <Input id="end_date" type="date" bind:value={editingExperience.end_date} />
+                    </div>
+
+                    <div>
+                      <Label for="description">Description</Label>
+                      <Textarea id="description" bind:value={editingExperience.description} placeholder="Job Description" />
+                    </div>
+
+                    <div class="flex justify-between">
+                      <Button type="button" on:click={saveExperience} color="blue">Save Experience</Button>
+                      <Button type="button" on:click={cancelEdit} color="gray">Cancel</Button>
+                    </div>
+                  </div>
+                {/if}
                   <!-- List of existing experiences -->
                   {#each $form.experiences as experience, index (experience.id)}
                     <div class="mb-4 p-4 border rounded-md space-y-2">
-                      <h4>{experience.job_title}</h4>
-                      <p class="font-semibold text-gray-500">{experience.company_name}</p>
-                      <p>{experience.start_date} to {experience.end_date}</p>
-                      <p>{experience.description}</p>
-                      <Button type="button" on:click={() => editExperience(experience)}>Edit</Button>
+                      {#if editingExperience && editingExperience.id === experience.id}
+                        <!-- Experience form for editing -->
+                        <div class="space-y-4">
+                          <div>
+                            <Label for="job_title">Job Title</Label>
+                            <Input id="job_title" bind:value={editingExperience.job_title} placeholder="Job Title" />
+                          </div>
+
+                          <div>
+                            <Label for="company_name">Company Name</Label>
+                            <Input id="company_name" bind:value={editingExperience.company_name} placeholder="Company Name" />
+                          </div>
+
+                          <div>
+                            <Label for="start_date">Start Date</Label>
+                            <Input id="start_date" type="date" bind:value={editingExperience.start_date} />
+                          </div>
+
+                          <div>
+                            <Label for="end_date">End Date</Label>
+                            <Input id="end_date" type="date" bind:value={editingExperience.end_date} />
+                          </div>
+
+                          <div>
+                            <Label for="description">Description</Label>
+                            <Textarea id="description" bind:value={editingExperience.description} placeholder="Job Description" />
+                          </div>
+
+                          <div class="flex justify-between">
+                            <Button type="button" on:click={saveExperience} color="blue">Save Experience</Button>
+                            <Button type="button" on:click={cancelEdit} color="gray">Cancel</Button>
+                          </div>
+                        </div>
+                      {:else}
+                        <!-- Display the experience -->
+                        <div>
+                          <h4>{experience.job_title}</h4>
+                          <p class="font-semibold text-gray-500">{experience.company_name}</p>
+                          <p>{experience.start_date} to {experience.end_date}</p>
+                          <p>{experience.description}</p>
+                          <Button type="button" on:click={() => editExperience(experience)}>Edit</Button>
+                        </div>
+                      {/if}
                     </div>
                   {/each}
+
                 </div>
               {/if}
             </div>
