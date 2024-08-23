@@ -1,14 +1,14 @@
 class CandidatesController < ApplicationController
   before_action :set_candidate, only: %i[ show edit update ]
+  before_action :set_experience, only: %i[ show edit ]
+  before_action :set_education, only: %i[ show edit ]
+  before_action :set_disabilities, only: %i[ show edit ]
 
   def show
-    set_experience
-    set_education
+    set_disabilities
   end
 
   def edit
-    set_experience
-    set_education
   end
 
   def update
@@ -35,6 +35,16 @@ class CandidatesController < ApplicationController
 
   def set_education
     @educations = Education.where(candidate: @candidate).order(end_date: :desc)
+  end
+
+  def set_disabilities
+    candidate_disabilities = CandidateDisability.includes(:disability).where(candidate: @candidate)
+    @disability_details = candidate_disabilities.map do |cd|
+      {
+        candidate_disability: cd,
+        disability: cd.disability
+      }
+    end
   end
 
   def update_experiences

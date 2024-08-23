@@ -29,6 +29,7 @@ Rails.application.routes.draw do
 
   resources :candidates do
     resources :experiences, only: [:create, :update]
+    resources :candidate_disabilities, only: [:create, :update, :destroy]
   end
   resources :employers
   resources :jobs

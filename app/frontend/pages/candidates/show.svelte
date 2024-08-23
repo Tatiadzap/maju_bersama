@@ -11,6 +11,7 @@
   export let user
   export let experiences
   export let educations
+  export let disability_details
 
   // Utility functions
   function formatDate(date, format) {
@@ -48,7 +49,7 @@
       <p class="text-lg font-medium">{experience.job_title}</p>
       <p class="">{experience.company_name}</p>
       <p class="text-sm text-gray-500">{formatDate(experience.start_date, 'MMM YYYY')} - {formatDate(experience.end_date, 'MMM YYYY')}</p>
-      <p class="text-sm">{experience.description}</p>
+      <p class="block text-sm !mt-4">{experience.description}</p>
     </div>
     {#if index < experiences.length - 1}
       <Separator />
@@ -64,7 +65,7 @@
       <p class="text-base">{education.degree} in {education.field_of_study}</p>
       <p class="text-sm text-gray-500">
         {formatDate(education.start_date, 'MMM YYYY')} - {formatDate(education.end_date, 'MMM YYYY')}</p>
-      <p class="text-sm">{education.description}</p>
+      <p class="text-sm !mt-4">{education.description}</p>
     </div>
     {#if index < educations.length - 1}
       <Separator />
@@ -72,10 +73,26 @@
   {/each}
 </Card>
 
+{#if disability_details.length > 0}
+  <Card class="p-6 mb-4 border-none shadow-none">
+    <h1 class="text-lg font-bold mb-12">Disabilities</h1>
+      <div class="space-y-4">
+        {#each disability_details as item, index}
+          <p>{item.disability.name}</p>
+          <p class="text-sm text-gray-600">{item.candidate_disability.details}</p>
+          {#if index < disability_details.length - 1}
+            <Separator />
+          {/if}
+        {/each}
+      </div>
+  </Card>
+{/if}
+
+
 <Card class="p-6 mb-4 border-none shadow-none">
   <h1 class="text-lg font-bold">Languages</h1>
   {#each candidate.languages as language, index}
-    <div class="py-12 space-y-1">
+    <div class="py-6 space-y-1">
       <p class="text-gray-500"> {language}</p>
     </div>
     {#if index < candidate.languages.length - 1}

@@ -1,6 +1,6 @@
 require "test_helper"
 
-class UserDisabilityTest < ActiveSupport::TestCase
+class CandidateDisabilitiesControllerTest < ActionDispatch::IntegrationTest
   # test "the truth" do
   #   assert true
   # end

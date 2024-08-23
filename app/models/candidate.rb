@@ -4,6 +4,9 @@ class Candidate < ApplicationRecord
   has_many :skills, through: :candidate_skills
   has_many :educations, dependent: :destroy
   has_many :experiences, dependent: :destroy
+  has_many :candidate_disabilities
+  has_many :disabilities, through: :candidate_disabilities, source: :disability
+
 
   validates :first_name, :last_name, presence: true
 

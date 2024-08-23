@@ -1,0 +1,2 @@
+module CandidateDisabilitiesHelper
+end

@@ -16,7 +16,8 @@ class User < ApplicationRecord
   has_many :jobs, through: :job_applications
   has_many :event_registrations, dependent: :destroy
   has_many :jobs, through: :event_registrations
-  has_many :user_disabilities, dependent: :destroy
+  has_many :candidate_disabilities, dependent: :destroy
+  has_many :disabilities, through: :candidate_disabilities, source: :disability
 
   # Optional: Add additional validations or associations as needed
   #
