@@ -14,6 +14,16 @@ ActiveRecord::Schema[7.1].define(version: 2024_08_25_040102) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
+  create_table "candidate_disabilities", force: :cascade do |t|
+    t.bigint "candidate_id", null: false
+    t.bigint "disability_id", null: false
+    t.text "details"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["candidate_id"], name: "index_candidate_disabilities_on_candidate_id"
+    t.index ["disability_id"], name: "index_candidate_disabilities_on_disability_id"
+  end
+
   create_table "candidate_skills", force: :cascade do |t|
     t.bigint "candidate_id", null: false
     t.bigint "skill_id", null: false
@@ -131,16 +141,6 @@ ActiveRecord::Schema[7.1].define(version: 2024_08_25_040102) do
     t.datetime "updated_at", null: false
   end
 
-  create_table "user_disabilities", force: :cascade do |t|
-    t.bigint "user_id", null: false
-    t.bigint "disability_id", null: false
-    t.text "details"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["disability_id"], name: "index_user_disabilities_on_disability_id"
-    t.index ["user_id"], name: "index_user_disabilities_on_user_id"
-  end
-
   create_table "users", force: :cascade do |t|
     t.string "email", default: "", null: false
     t.string "encrypted_password", default: "", null: false
@@ -163,6 +163,8 @@ ActiveRecord::Schema[7.1].define(version: 2024_08_25_040102) do
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end
 
+  add_foreign_key "candidate_disabilities", "disabilities"
+  add_foreign_key "candidate_disabilities", "users", column: "candidate_id"
   add_foreign_key "candidate_skills", "candidates"
   add_foreign_key "candidate_skills", "skills"
   add_foreign_key "candidates", "users"
@@ -175,6 +177,4 @@ ActiveRecord::Schema[7.1].define(version: 2024_08_25_040102) do
   add_foreign_key "job_applications", "jobs"
   add_foreign_key "job_applications", "users"
   add_foreign_key "jobs", "employers"
-  add_foreign_key "user_disabilities", "disabilities"
-  add_foreign_key "user_disabilities", "users"
 end

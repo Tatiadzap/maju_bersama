@@ -14,7 +14,7 @@
 # Education.destroy_all
 # Skill.destroy_all
 # CandidateSkill.destroy_all
-# UserDisability.destroy_all
+# CandidateDisability.destroy_all
 
 # # Reset primary key sequences and clear existing records
 # ActiveRecord::Base.connection.tables.each do |table|
@@ -183,7 +183,7 @@
 #     )
 #   end
 
-#   UserDisability.create!(
+#   CandidateDisability.create!(
 #     user_id: candidate.user_id,
 #     disability_id: disabilities.sample.id,
 #     details: Faker::Lorem.sentence

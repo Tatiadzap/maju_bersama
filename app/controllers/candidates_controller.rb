@@ -37,6 +37,10 @@ class CandidatesController < ApplicationController
     @educations = Education.where(candidate: @candidate).order(end_date: :desc)
   end
 
+  def set_user_disabilties
+    @disabilities = CandidateDisability.where(candidate: @candidate)
+  end
+
   def update_experiences
     submitted_experience_ids = []
 
