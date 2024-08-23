@@ -213,50 +213,61 @@
 # db/seeds.rb
 
 # Clear existing data to avoid duplicates
-Disability.delete_all
+# Disability.delete_all
 
-# Seed data for the disabilities table
-Disability.create!([
-  {
-    name: "Visual Impairment",
-    description: "Includes partial vision loss, low vision, and total blindness."
-  },
-  {
-    name: "Hearing Impairment",
-    description: "Includes partial hearing loss and total deafness."
-  },
-  {
-    name: "Mobility Impairment",
-    description: "Includes conditions that limit movement or dexterity, such as paralysis, amputation, or arthritis."
-  },
-  {
-    name: "Speech Impairment",
-    description: "Conditions that affect an individual's ability to speak, such as stuttering, muteness, or other speech disorders."
-  },
-  {
-    name: "Cognitive Impairment",
-    description: "Includes conditions that affect cognitive functions, such as learning disabilities, traumatic brain injury, or dementia."
-  },
-  {
-    name: "Mental Health Conditions",
-    description: "Includes conditions such as anxiety disorders, depression, schizophrenia, and other mental health challenges."
-  },
-  {
-    name: "Chronic Illness",
-    description: "Includes long-term health conditions such as diabetes, epilepsy, HIV/AIDS, or chronic fatigue syndrome."
-  },
-  {
-    name: "Autism Spectrum Disorder",
-    description: "A range of neurodevelopmental disorders that affect communication, behavior, and social interaction."
-  },
-  {
-    name: "Intellectual Disability",
-    description: "A condition characterized by limitations in intellectual functioning and adaptive behavior, including Down syndrome and other similar conditions."
-  },
-  {
-    name: "Learning Disability",
-    description: "Includes dyslexia, dyscalculia, and other conditions that affect learning and academic performance."
-  }
-])
+# # Seed data for the disabilities table
+# Disability.create!([
+#   {
+#     name: "Visual Impairment",
+#     description: "Includes partial vision loss, low vision, and total blindness."
+#   },
+#   {
+#     name: "Hearing Impairment",
+#     description: "Includes partial hearing loss and total deafness."
+#   },
+#   {
+#     name: "Mobility Impairment",
+#     description: "Includes conditions that limit movement or dexterity, such as paralysis, amputation, or arthritis."
+#   },
+#   {
+#     name: "Speech Impairment",
+#     description: "Conditions that affect an individual's ability to speak, such as stuttering, muteness, or other speech disorders."
+#   },
+#   {
+#     name: "Cognitive Impairment",
+#     description: "Includes conditions that affect cognitive functions, such as learning disabilities, traumatic brain injury, or dementia."
+#   },
+#   {
+#     name: "Mental Health Conditions",
+#     description: "Includes conditions such as anxiety disorders, depression, schizophrenia, and other mental health challenges."
+#   },
+#   {
+#     name: "Chronic Illness",
+#     description: "Includes long-term health conditions such as diabetes, epilepsy, HIV/AIDS, or chronic fatigue syndrome."
+#   },
+#   {
+#     name: "Autism Spectrum Disorder",
+#     description: "A range of neurodevelopmental disorders that affect communication, behavior, and social interaction."
+#   },
+#   {
+#     name: "Intellectual Disability",
+#     description: "A condition characterized by limitations in intellectual functioning and adaptive behavior, including Down syndrome and other similar conditions."
+#   },
+#   {
+#     name: "Learning Disability",
+#     description: "Includes dyslexia, dyscalculia, and other conditions that affect learning and academic performance."
+#   }
+# ])
 
-puts "Seeded disabilities data successfully!"
+# puts "Seeded disabilities data successfully!"
+
+# Assuming Candidate with id: 1 already exists
+candidate = Candidate.find(1)
+
+# Use the existing disability IDs to create candidate_disabilities
+CandidateDisability.create!(candidate: candidate, disability_id: 10, details: 'Requires screen reader.')
+CandidateDisability.create!(candidate: candidate, disability_id: 11, details: 'Uses hearing aids.')
+CandidateDisability.create!(candidate: candidate, disability_id: 12, details: 'Requires wheelchair access.')
+CandidateDisability.create!(candidate: candidate, disability_id: 13, details: 'Uses alternative communication methods.')
+CandidateDisability.create!(candidate: candidate, disability_id: 14, details: 'Needs additional support for cognitive tasks.')
+CandidateDisability.create!(candidate: candidate, disability_id: 15, details: 'Requires mental health accommodations.')

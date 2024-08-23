@@ -6,7 +6,6 @@ class CandidateDisabilitiesController < ApplicationController
 
   end
 
-  def
   private
 
   def set_candidate
