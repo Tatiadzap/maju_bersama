@@ -13,14 +13,14 @@
     prepareCandidateDisabilityForEdit
   } from "$lib/candidateDisabilityUtils";
 
-  export let candidate = null;
-  export let user = null;
+  export let candidate
+  export let user
+  console.log(user)
   export let experiences = [];
   export let candidate_disabilities = [];
   export let disabilities = [];
-  export let disability_details = []
+  export let disability_details = [];
   export let disability_options = disabilities;
-
 
   let form = useForm({
     candidate: {
@@ -73,7 +73,6 @@
     }
   }
 
-  // Experience functions
   function addExperience() {
     showExperienceForm = true;
     editingExperience = { id: null, job_title: '', company_name: '', start_date: '', end_date: '', description: '' };
@@ -83,27 +82,16 @@
     try {
       let response;
       if (!editingExperience.id) {
-          // Create new experience in the backend
-          response = await axios.post(`/candidates/${candidate.id}/experiences`, editingExperience);
-          $form.experiences = [...$form.experiences, { ...response.data }];
+        response = await axios.post(`/candidates/${candidate.id}/experiences`, editingExperience);
+        $form.experiences = [...$form.experiences, { ...response.data }];
       } else {
-          // Update existing experience in the backend
-          if (!editingExperience.id) {
-              throw new Error("Experience ID is missing for update.");
-          }
-          // Note: We include the candidate ID and the experience ID in the URL
-          response = await axios.put(`/candidates/${candidate.id}/experiences/${editingExperience.id}`, editingExperience);
-          $form.experiences = $form.experiences.map(exp => exp.id === editingExperience.id ? { ...response.data } : exp);
+        response = await axios.put(`/candidates/${candidate.id}/experiences/${editingExperience.id}`, editingExperience);
+        $form.experiences = $form.experiences.map(exp => exp.id === editingExperience.id ? { ...response.data } : exp);
       }
       showExperienceForm = false;
       editingExperience = null;
     } catch (error) {
       console.error('Failed to save experience:', error);
-      if (error.response && error.response.status === 404) {
-          console.error('The requested endpoint was not found. Please check the API route.');
-      } else {
-          console.error('An error occurred:', error.message);
-      }
     }
   }
 
@@ -119,53 +107,24 @@
     editingDisability = null;
   }
 
-  function submit() {
-    $form.put(`/candidates/${candidate.id}`, {
-      onSuccess: () => { console.log('Form submitted successfully'); },
-      onError: (errors) => { console.error('Form submission failed', errors); }
-    });
-  }
-
-  // Disability functions
   function addNewDisability() {
     showDisabilityForm = true;
     editingDisability = initializeNewCandidateDisability(disabilities);
   }
 
   async function saveDisability() {
-    console.log("Disability to save:", editingDisability);
     const result = await saveOrUpdateCandidateDisability(candidate.id, editingDisability, $form);
     if (result && result.success) {
-      console.log("Before update:", $form.candidate_disabilities);
-
-      // Update form.candidate_disabilities to trigger reactivity
       $form.candidate_disabilities = [...$form.candidate_disabilities];
-
-      console.log("After update:", $form.candidate_disabilities);
-
-      // Update disability_details directly from $form.candidate_disabilities
       disability_details = $form.candidate_disabilities.map(cd => {
-        // Ensure disabilities is populated
         const foundDisability = disability_options.find(disability => disability.id === Number(cd.disability_id));
-
-        console.log(Number(cd.disability_id))
-
-        if (foundDisability) {
-          console.log(foundDisability.name); // This will log the name of the disability with id 10
-        } else {
-          console.log("Disability not found");
-        }
-
         return {
           id: cd.id,
           disability_id: cd.disability_id,
           details: cd.details,
-          disability_name: foundDisability ? foundDisability.name : 'Unknown' // Map to the name
+          disability_name: foundDisability ? foundDisability.name : 'Unknown'
         };
       });
-
-      console.log("Updated disability details:", disability_details);
-
       showDisabilityForm = false;
       editingDisability = null;
     }
@@ -178,19 +137,20 @@
 
   function handleSelectChange(event) {
     editingDisability.disability_id = event.detail.value;
-    console.log("Selected Disability ID:", editingDisability.disability_id);
+  }
+
+  function submit() {
+    $form.put(`/candidates/${candidate.id}`, {
+      onSuccess: () => { console.log('Form submitted successfully'); },
+      onError: (errors) => { console.error('Form submission failed', errors); }
+    });
   }
 
   $: cardTitle = steps[currentStep].title;
   $: cardDescription = steps[currentStep].description;
-
-  console.log($form.candidate_disabilities[0])
 </script>
 
-
-
 <div class="flex">
-  <!-- Sidebar for step navigation -->
   <nav class="w-1/4 pr-4 space-y-2 text-left">
     <ul>
       {#each steps as item, index}
@@ -204,7 +164,6 @@
     </ul>
   </nav>
 
-  <!-- Main content area for the current step -->
   <div class="w-3/4 p-4">
     <Card.Root>
       <Card.Header>
@@ -216,7 +175,6 @@
           <form on:submit|preventDefault={submit}>
             <div class="space-y-4">
               {#if currentStep === 0}
-                <!-- Personal Info Step -->
                 <div>
                   <Label for="first_name">First Name</Label>
                   <Input id="first_name" bind:value={$form.candidate.first_name} placeholder="First Name" />
@@ -250,7 +208,6 @@
                 </div>
 
               {:else if currentStep === 1}
-                <!-- Contact Info Step -->
                 <div>
                   <Label for="phone">Phone</Label>
                   <Input id="phone" bind:value={$form.user.phone} placeholder="Phone" />
@@ -300,7 +257,6 @@
                 </div>
 
               {:else if currentStep === 2}
-                <!-- Additional Info Step -->
                 <div class="grid gap-3">
                   <Label for="bio">Bio</Label>
                   <Textarea id="bio" bind:value={$form.user.bio} placeholder="Tell us about yourself" class="min-h-32" />
@@ -310,14 +266,11 @@
                 </div>
 
               {:else if currentStep === 3}
-                <!-- Experiences Step -->
                 <div class="space-y-6">
-                  <!-- Add new experience button -->
                   {#if !showExperienceForm}
                     <Button type="button" on:click={addExperience}>+ Add New Experience</Button>
                   {/if}
 
-                  <!-- Experience form for adding or editing an experience -->
                   {#if showExperienceForm}
                     <div class="mb-4 p-4 border rounded-md space-y-4">
                       <div>
@@ -352,11 +305,9 @@
                     </div>
                   {/if}
 
-                  <!-- List of existing experiences -->
                   {#each $form.experiences as experience, index (experience.id)}
                     <div class="mb-4 p-4 border rounded-md space-y-2">
                       {#if editingExperience && editingExperience.id === experience.id}
-                        <!-- Experience form for editing -->
                         <div class="space-y-4">
                           <div>
                             <Label for="job_title">Job Title</Label>
@@ -389,7 +340,6 @@
                           </div>
                         </div>
                       {:else}
-                        <!-- Display the experience -->
                         <div class="flex justify-between items-start">
                           <div>
                             <h4>{experience.job_title}</h4>
@@ -405,14 +355,11 @@
                 </div>
 
               {:else if currentStep === 4}
-                <!-- Disabilities Step -->
                 <div class="space-y-6">
-                  <!-- Add new disability button -->
                   {#if !showDisabilityForm}
                     <Button type="button" on:click={addNewDisability}>+ Add New Disability</Button>
                   {/if}
 
-                  <!-- Disability form for adding or editing a disability -->
                   {#if showDisabilityForm}
                     <div class="mb-4 p-4 border rounded-md space-y-4">
                       <div>
@@ -443,11 +390,9 @@
                     </div>
                   {/if}
 
-                  <!-- Displaying the Candidate's Disabilities -->
                   {#each disability_details as disabilityDetail, index (disabilityDetail.id)}
                     <div class="mb-4 p-4 border rounded-md space-y-2">
                       {#if editingDisability && editingDisability.id === disabilityDetail.id}
-                        <!-- Disability form for editing -->
                         <div class="space-y-4">
                           <div>
                             <Label for="disability_id">Disability</Label>
@@ -476,12 +421,10 @@
                           </div>
                         </div>
                       {:else}
-                        <!-- Display the disability -->
                         <div class="flex justify-between items-start">
                           <div>
                             <h4>{disabilityDetail.disability_name}</h4>
                             <p>{disabilityDetail.details}</p>
-                            <p></p>
                           </div>
                           <Button type="button" class="ml-4" on:click={() => editCandidateDisability(disabilityDetail)}>Edit</Button>
                         </div>
@@ -498,16 +441,19 @@
                 {/if}
                 {#if currentStep < steps.length - 1}
                   <Button type="button" on:click={goToNextStep}>Next</Button>
-                {:else}
-                  <Button type="submit" disabled={$form.processing}>Save</Button>
                 {/if}
+                <Button type="submit" disabled={$form.processing}>Save</Button>
+
               </div>
             </Card.Footer>
+
           </form>
         {:else}
-          <p>Loading...</p> <!-- Handle case where data is not yet available -->
+          <p>Loading...</p>
         {/if}
       </Card.Content>
+
     </Card.Root>
+
   </div>
 </div>

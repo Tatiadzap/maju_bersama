@@ -14,6 +14,7 @@ class CandidatesController < ApplicationController
   def update
     ActiveRecord::Base.transaction do
       @candidate.update!(candidate_params)
+      @user.update!(user_params)
       update_experiences if params[:candidate][:experiences]
     end
 
