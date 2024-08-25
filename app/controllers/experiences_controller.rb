@@ -3,13 +3,11 @@ class ExperiencesController < ApplicationController
   before_action :set_experience, only: [:update]
 
   def create
-    @candidate_disability = @candidate.candidate_disabilities.new(candidate_disability_params)
-    if @candidate_disability.save
-      render json: @candidate_disability.as_json(include: :disability), status: :created
+    @experience = @candidate.experiences.new(experience_params)
+    if @experience.save
+      render json: @experience, status: :created
     else
-      Rails.logger.debug "Failed to create CandidateDisability: #{candidate_disability_params.inspect}"
-      Rails.logger.debug "Validation errors: #{@candidate_disability.errors.full_messages}"
-      render json: @candidate_disability.errors, status: :unprocessable_entity
+      render json: @experience.errors, status: :unprocessable_entity
     end
   end
 

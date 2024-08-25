@@ -83,16 +83,27 @@
     try {
       let response;
       if (!editingExperience.id) {
-        response = await axios.post(`/candidates/${candidate.id}/experiences`, editingExperience);
-        $form.experiences = [...$form.experiences, { ...response.data }];
+          // Create new experience in the backend
+          response = await axios.post(`/candidates/${candidate.id}/experiences`, editingExperience);
+          $form.experiences = [...$form.experiences, { ...response.data }];
       } else {
-        response = await axios.put(`/candidates/${candidate.id}/experiences/${editingExperience.id}`, editingExperience);
-        $form.experiences = $form.experiences.map(exp => exp.id === editingExperience.id ? { ...response.data } : exp);
+          // Update existing experience in the backend
+          if (!editingExperience.id) {
+              throw new Error("Experience ID is missing for update.");
+          }
+          // Note: We include the candidate ID and the experience ID in the URL
+          response = await axios.put(`/candidates/${candidate.id}/experiences/${editingExperience.id}`, editingExperience);
+          $form.experiences = $form.experiences.map(exp => exp.id === editingExperience.id ? { ...response.data } : exp);
       }
       showExperienceForm = false;
       editingExperience = null;
     } catch (error) {
       console.error('Failed to save experience:', error);
+      if (error.response && error.response.status === 404) {
+          console.error('The requested endpoint was not found. Please check the API route.');
+      } else {
+          console.error('An error occurred:', error.message);
+      }
     }
   }
 
