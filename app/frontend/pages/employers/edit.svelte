@@ -88,36 +88,36 @@
   $: cardDescription = steps[currentStep].description;
 </script>
 
-<div class="flex">
-  <!-- Sidebar for step navigation -->
-  <nav class="w-1/4 pr-4 space-y-2 text-left">
-    <ul>
-      {#each steps as item, index}
-        {@const isActive = currentStep === index}
+<form on:submit|preventDefault={submit}>
+  <div class="flex">
+    <!-- Sidebar for step navigation -->
+    <nav class="w-1/4 pr-4 space-y-2 text-left">
+      <ul>
+        {#each steps as item, index}
+          {@const isActive = currentStep === index}
 
-        <li>
-          <a
-            href={item.href}
-            class={`block w-full p-2 rounded-md ${isActive ? 'bg-black text-white' : 'text-black'}`}
-            on:click={() => handleStepChange(index)}
-          >
-            {item.title}
-          </a>
-        </li>
-      {/each}
-    </ul>
-  </nav>
+          <li>
+            <a
+              href={item.href}
+              class={`block w-full p-2 rounded-md ${isActive ? 'bg-black text-white' : 'text-black'}`}
+              on:click={() => handleStepChange(index)}
+            >
+              {item.title}
+            </a>
+          </li>
+        {/each}
+      </ul>
+    </nav>
 
-  <!-- Main content area for the current step -->
-  <div class="w-3/4 p-4">
-    <Card.Root>
-      <Card.Header>
-        <Card.Title>{cardTitle}</Card.Title>
-        <Card.Description>{cardDescription}</Card.Description>
-      </Card.Header>
-      <Card.Content>
-        {#if employer && user}
-          <form on:submit|preventDefault={submit}>
+    <!-- Main content area for the current step -->
+    <div class="w-3/4 p-4">
+      <Card.Root>
+        <Card.Header>
+          <Card.Title>{cardTitle}</Card.Title>
+          <Card.Description>{cardDescription}</Card.Description>
+        </Card.Header>
+        <Card.Content>
+          {#if employer && user}
             <div class="space-y-4">
               {#if currentStep === 0}
                 <!-- Company Info Step -->
@@ -209,24 +209,27 @@
                 </div>
               {/if}
             </div>
+          {:else}
+            <p>Loading...</p> <!-- Handle case where data is not yet available -->
+          {/if}
+        </Card.Content>
 
-            <Card.Footer class="px-0 py-4 border-t">
-              <div class="flex justify-between">
-                {#if currentStep > 0}
-                  <Button type="button" on:click={goToPreviousStep}>Previous</Button>
-                {/if}
-                {#if currentStep < steps.length - 1}
-                  <Button type="button" on:click={goToNextStep}>Next</Button>
-                {:else}
-                  <Button type="submit" disabled={$form.processing}>Save</Button>
-                {/if}
-              </div>
-            </Card.Footer>
-          </form>
-        {:else}
-          <p>Loading...</p> <!-- Handle case where data is not yet available -->
-        {/if}
-      </Card.Content>
-    </Card.Root>
+        <Card.Footer class="px-6 py-4">
+          <div class="flex w-full justify-between">
+            {#if currentStep > 0}
+              <Button type="button" on:click={goToPreviousStep}>Previous</Button>
+            {/if}
+            {#if currentStep < steps.length - 1}
+              <Button type="button" on:click={goToNextStep}>Next</Button>
+            {/if}
+          </div>
+        </Card.Footer>
+      </Card.Root>
+      <div class="mt-4 mx-auto w-full">
+        <Button class="w-full bg-green-600" type="submit" disabled={$form.processing}>Save</Button>
+      </div>
+    </div>
   </div>
-</div>
+
+
+</form>
