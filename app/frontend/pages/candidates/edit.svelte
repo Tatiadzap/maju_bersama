@@ -51,7 +51,7 @@
 
   const steps = [
     { href: '#personal-info', title: 'Personal Info', description: 'Update your personal details.' },
-    { href: '#contact-info', title: 'Update your contact details.' },
+    { href: '#contact-info', title: 'Contact Info', description: 'Update your contact details.' },
     { href: '#additional-info', title: 'Additional Info', description: 'Provide additional information about yourself.' },
     { href: '#experiences', title: 'Experiences', description: 'Add and update your job experiences.' },
     { href: '#disabilities', title: 'Disabilities', description: 'Add and update your disabilities.' }
@@ -165,14 +165,14 @@
   </nav>
 
   <div class="w-3/4 p-4">
-    <Card.Root>
-      <Card.Header>
-        <Card.Title>{cardTitle}</Card.Title>
-        <Card.Description>{cardDescription}</Card.Description>
-      </Card.Header>
-      <Card.Content>
-        {#if candidate && user}
-          <form on:submit|preventDefault={submit}>
+    <form on:submit|preventDefault={submit}>
+      <Card.Root>
+        <Card.Header>
+          <Card.Title>{cardTitle}</Card.Title>
+          <Card.Description>{cardDescription}</Card.Description>
+        </Card.Header>
+        <Card.Content>
+          {#if candidate && user}
             <div class="space-y-4">
               {#if currentStep === 0}
                 <div>
@@ -434,26 +434,29 @@
                 </div>
               {/if}
             </div>
-            <Card.Footer class="px-0 py-4 border-t">
-              <div class="flex justify-between w-full">
-                {#if currentStep > 0}
-                  <Button type="button" on:click={goToPreviousStep}>Previous</Button>
-                {/if}
-                {#if currentStep < steps.length - 1}
-                  <Button type="button" on:click={goToNextStep}>Next</Button>
-                {/if}
-                <Button type="submit" disabled={$form.processing}>Save</Button>
+          {:else}
+            <p>Loading...</p>
+          {/if}
+        </Card.Content>
+        <Card.Footer class="px-6 py-4">
+          <div class="flex justify-between w-full">
+            {#if currentStep > 0}
+              <Button type="button" on:click={goToPreviousStep}>Previous</Button>
+            {/if}
+            {#if currentStep < steps.length - 1}
+              <Button type="button" on:click={goToNextStep}>Next</Button>
+            {/if}
+          </div>
+        </Card.Footer>
 
-              </div>
-            </Card.Footer>
+      </Card.Root>
 
-          </form>
-        {:else}
-          <p>Loading...</p>
-        {/if}
-      </Card.Content>
+      <!-- Place the Save button outside the Card.Root but still inside the form -->
+      <div class="mt-4 mx-auto w-full">
+        <Button class="w-full bg-green-600" type="submit" disabled={$form.processing}>Save</Button>
+      </div>
+    </form>
 
-    </Card.Root>
 
   </div>
 </div>
