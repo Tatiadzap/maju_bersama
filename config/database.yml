@@ -14,5 +14,7 @@ test:
 production:
   <<: *default
   database: maju_bersama_production
-  username: maju_bersama
-  password: <%= ENV["MAJU_BERSAMA_DATABASE_PASSWORD"] %>
+  username: maju_bersama_user
+  password: xPPWJuZ4EoAqfOzcqmVVeXgyfCP90XEi
+  host: dpg-cr5s132j1k6c7398g5g0-a
+  port: 5432
