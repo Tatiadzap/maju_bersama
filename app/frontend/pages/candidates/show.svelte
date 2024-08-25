@@ -78,8 +78,8 @@
     <h1 class="text-lg font-bold mb-12">Disabilities</h1>
       <div class="space-y-4">
         {#each disability_details as item, index}
-          <p>{item.disability.name}</p>
-          <p class="text-sm text-gray-600">{item.candidate_disability.details}</p>
+          <p>{item.disability_name}</p>
+          <p class="text-sm text-gray-600">{item.details}</p>
           {#if index < disability_details.length - 1}
             <Separator />
           {/if}

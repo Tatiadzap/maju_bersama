@@ -4,12 +4,23 @@
   import { Input } from "$lib/components/ui/input";
   import { Label } from "$lib/components/ui/label";
   import { Textarea } from "$lib/components/ui/textarea";
+  import * as Select from "$lib/components/ui/select";
   import { useForm } from "@inertiajs/svelte";
   import axios from 'axios';
+  import {
+    saveOrUpdateCandidateDisability,
+    initializeNewCandidateDisability,
+    prepareCandidateDisabilityForEdit
+  } from "$lib/candidateDisabilityUtils";
 
   export let candidate = null;
   export let user = null;
   export let experiences = [];
+  export let candidate_disabilities = [];
+  export let disabilities = [];
+  export let disability_details = []
+  export let disability_options = disabilities;
+
 
   let form = useForm({
     candidate: {
@@ -27,34 +38,23 @@
       country: user?.country || '',
       bio: user?.bio || '',
     },
-    experiences: experiences || [],  // Adding experiences array
+    experiences: experiences || [],
+    candidate_disabilities: candidate_disabilities || [],
+    disability_details: disability_details || []
   });
 
   let currentStep = 0;
   let editingExperience = null;
-  let showForm = false;
+  let editingDisability = null;
+  let showExperienceForm = false;
+  let showDisabilityForm = false;
 
   const steps = [
-    {
-      href: '#personal-info',
-      title: 'Personal Info',
-      description: 'Update your personal details.',
-    },
-    {
-      href: '#contact-info',
-      title: 'Contact Info',
-      description: 'Update your contact details.',
-    },
-    {
-      href: '#additional-info',
-      title: 'Additional Info',
-      description: 'Provide additional information about yourself.',
-    },
-    {
-      href: '#experiences',
-      title: 'Experiences',
-      description: 'Add and update your job experiences.',
-    }
+    { href: '#personal-info', title: 'Personal Info', description: 'Update your personal details.' },
+    { href: '#contact-info', title: 'Update your contact details.' },
+    { href: '#additional-info', title: 'Additional Info', description: 'Provide additional information about yourself.' },
+    { href: '#experiences', title: 'Experiences', description: 'Add and update your job experiences.' },
+    { href: '#disabilities', title: 'Disabilities', description: 'Add and update your disabilities.' }
   ];
 
   function handleStepChange(step: number) {
@@ -73,78 +73,121 @@
     }
   }
 
+  // Experience functions
   function addExperience() {
-    showForm = true;
-    editingExperience = {
-      id: null,
-      job_title: '',
-      company_name: '',
-      start_date: '',
-      end_date: '',
-      description: '',
-    };
+    showExperienceForm = true;
+    editingExperience = { id: null, job_title: '', company_name: '', start_date: '', end_date: '', description: '' };
   }
 
   async function saveExperience() {
     try {
-        let response;
-
-        if (!editingExperience.id) {
-            // Create new experience in the backend
-            response = await axios.post(`/candidates/${candidate.id}/experiences`, editingExperience);
-            $form.experiences = [...$form.experiences, { ...response.data }];
-        } else {
-            // Update existing experience in the backend
-            if (!editingExperience.id) {
-                throw new Error("Experience ID is missing for update.");
-            }
-            // Note: We include the candidate ID and the experience ID in the URL
-            response = await axios.put(`/candidates/${candidate.id}/experiences/${editingExperience.id}`, editingExperience);
-            $form.experiences = $form.experiences.map(exp => exp.id === editingExperience.id ? { ...response.data } : exp);
-        }
-
-        showForm = false;
-        editingExperience = null;
+      let response;
+      if (!editingExperience.id) {
+          // Create new experience in the backend
+          response = await axios.post(`/candidates/${candidate.id}/experiences`, editingExperience);
+          $form.experiences = [...$form.experiences, { ...response.data }];
+      } else {
+          // Update existing experience in the backend
+          if (!editingExperience.id) {
+              throw new Error("Experience ID is missing for update.");
+          }
+          // Note: We include the candidate ID and the experience ID in the URL
+          response = await axios.put(`/candidates/${candidate.id}/experiences/${editingExperience.id}`, editingExperience);
+          $form.experiences = $form.experiences.map(exp => exp.id === editingExperience.id ? { ...response.data } : exp);
+      }
+      showExperienceForm = false;
+      editingExperience = null;
     } catch (error) {
-        console.error('Failed to save experience:', error);
-        if (error.response && error.response.status === 404) {
-            console.error('The requested endpoint was not found. Please check the API route.');
-        } else {
-            console.error('An error occurred:', error.message);
-        }
+      console.error('Failed to save experience:', error);
+      if (error.response && error.response.status === 404) {
+          console.error('The requested endpoint was not found. Please check the API route.');
+      } else {
+          console.error('An error occurred:', error.message);
+      }
     }
-}
-
+  }
 
   function editExperience(experience) {
     editingExperience = { ...experience };
-    showForm = true;
+    showExperienceForm = true;
   }
 
   function cancelEdit() {
-    showForm = false;
+    showExperienceForm = false;
+    showDisabilityForm = false;
     editingExperience = null;
+    editingDisability = null;
   }
 
   function submit() {
-    // Log the current experiences array to see what's being submitted
-    console.log($form.experiences);
-
-    // Handle form submission using Inertia's form handling
     $form.put(`/candidates/${candidate.id}`, {
-      onSuccess: () => {
-        console.log('Form submitted successfully');
-      },
-      onError: (errors) => {
-        console.error('Form submission failed', errors);
-      }
+      onSuccess: () => { console.log('Form submitted successfully'); },
+      onError: (errors) => { console.error('Form submission failed', errors); }
     });
   }
 
-  // Reactive variables for title and description based on the current step
+  // Disability functions
+  function addNewDisability() {
+    showDisabilityForm = true;
+    editingDisability = initializeNewCandidateDisability(disabilities);
+  }
+
+  async function saveDisability() {
+    console.log("Disability to save:", editingDisability);
+    const result = await saveOrUpdateCandidateDisability(candidate.id, editingDisability, $form);
+    if (result && result.success) {
+      console.log("Before update:", $form.candidate_disabilities);
+
+      // Update form.candidate_disabilities to trigger reactivity
+      $form.candidate_disabilities = [...$form.candidate_disabilities];
+
+      console.log("After update:", $form.candidate_disabilities);
+
+      // Update disability_details directly from $form.candidate_disabilities
+      disability_details = $form.candidate_disabilities.map(cd => {
+        // Ensure disabilities is populated
+        const foundDisability = disability_options.find(disability => disability.id === Number(cd.disability_id));
+
+        console.log(Number(cd.disability_id))
+
+        if (foundDisability) {
+          console.log(foundDisability.name); // This will log the name of the disability with id 10
+        } else {
+          console.log("Disability not found");
+        }
+
+        return {
+          id: cd.id,
+          disability_id: cd.disability_id,
+          details: cd.details,
+          disability_name: foundDisability ? foundDisability.name : 'Unknown' // Map to the name
+        };
+      });
+
+      console.log("Updated disability details:", disability_details);
+
+      showDisabilityForm = false;
+      editingDisability = null;
+    }
+  }
+
+  function editCandidateDisability(disability) {
+    editingDisability = prepareCandidateDisabilityForEdit(disability);
+    showDisabilityForm = true;
+  }
+
+  function handleSelectChange(event) {
+    editingDisability.disability_id = event.detail.value;
+    console.log("Selected Disability ID:", editingDisability.disability_id);
+  }
+
   $: cardTitle = steps[currentStep].title;
   $: cardDescription = steps[currentStep].description;
+
+  console.log($form.candidate_disabilities[0])
 </script>
+
+
 
 <div class="flex">
   <!-- Sidebar for step navigation -->
@@ -152,13 +195,8 @@
     <ul>
       {#each steps as item, index}
         {@const isActive = currentStep === index}
-
         <li>
-          <a
-            href={item.href}
-            class={`block w-full p-2 rounded-md ${isActive ? 'bg-black text-white' : 'text-black'}`}
-            on:click={() => handleStepChange(index)}
-          >
+          <a href={item.href} class={`block w-full p-2 rounded-md ${isActive ? 'bg-black text-white' : 'text-black'}`} on:click={() => handleStepChange(index)}>
             {item.title}
           </a>
         </li>
@@ -210,6 +248,7 @@
                     <div class="text-sm text-red-500">{$form.errors['candidate.languages']}</div>
                   {/if}
                 </div>
+
               {:else if currentStep === 1}
                 <!-- Contact Info Step -->
                 <div>
@@ -259,62 +298,60 @@
                     <div class="text-sm text-red-500">{$form.errors['user.country']}</div>
                   {/if}
                 </div>
+
               {:else if currentStep === 2}
                 <!-- Additional Info Step -->
                 <div class="grid gap-3">
                   <Label for="bio">Bio</Label>
-                  <Textarea
-                    id="bio"
-                    bind:value={$form.user.bio}
-                    placeholder="Tell us about yourself"
-                    class="min-h-32"
-                  />
+                  <Textarea id="bio" bind:value={$form.user.bio} placeholder="Tell us about yourself" class="min-h-32" />
                   {#if $form.errors['user.bio']}
                     <div class="text-sm text-red-500">{$form.errors['user.bio']}</div>
                   {/if}
                 </div>
+
               {:else if currentStep === 3}
                 <!-- Experiences Step -->
                 <div class="space-y-6">
                   <!-- Add new experience button -->
-                  {#if !showForm}
+                  {#if !showExperienceForm}
                     <Button type="button" on:click={addExperience}>+ Add New Experience</Button>
                   {/if}
 
-                  <!-- Experience form for adding a new experience -->
-                  {#if showForm && !editingExperience.id}
-                  <div class="mb-4 p-4 border rounded-md space-y-4">
-                    <div>
-                      <Label for="job_title">Job Title</Label>
-                      <Input id="job_title" bind:value={editingExperience.job_title} placeholder="Job Title" />
-                    </div>
+                  <!-- Experience form for adding or editing an experience -->
+                  {#if showExperienceForm}
+                    <div class="mb-4 p-4 border rounded-md space-y-4">
+                      <div>
+                        <Label for="job_title">Job Title</Label>
+                        <Input id="job_title" bind:value={editingExperience.job_title} placeholder="Job Title" />
+                      </div>
 
-                    <div>
-                      <Label for="company_name">Company Name</Label>
-                      <Input id="company_name" bind:value={editingExperience.company_name} placeholder="Company Name" />
-                    </div>
+                      <div>
+                        <Label for="company_name">Company Name</Label>
+                        <Input id="company_name" bind:value={editingExperience.company_name} placeholder="Company Name" />
+                      </div>
 
-                    <div>
-                      <Label for="start_date">Start Date</Label>
-                      <Input id="start_date" type="date" bind:value={editingExperience.start_date} />
-                    </div>
+                      <div>
+                        <Label for="start_date">Start Date</Label>
+                        <Input id="start_date" type="date" bind:value={editingExperience.start_date} />
+                      </div>
 
-                    <div>
-                      <Label for="end_date">End Date</Label>
-                      <Input id="end_date" type="date" bind:value={editingExperience.end_date} />
-                    </div>
+                      <div>
+                        <Label for="end_date">End Date</Label>
+                        <Input id="end_date" type="date" bind:value={editingExperience.end_date} />
+                      </div>
 
-                    <div>
-                      <Label for="description">Description</Label>
-                      <Textarea id="description" bind:value={editingExperience.description} placeholder="Job Description" />
-                    </div>
+                      <div>
+                        <Label for="description">Description</Label>
+                        <Textarea id="description" bind:value={editingExperience.description} placeholder="Job Description" />
+                      </div>
 
-                    <div class="flex justify-between">
-                      <Button type="button" on:click={saveExperience} color="blue">Save Experience</Button>
-                      <Button type="button" on:click={cancelEdit} color="gray">Cancel</Button>
+                      <div class="flex justify-between">
+                        <Button type="button" on:click={saveExperience} color="blue">Save Experience</Button>
+                        <Button type="button" on:click={cancelEdit} color="gray">Cancel</Button>
+                      </div>
                     </div>
-                  </div>
                   {/if}
+
                   <!-- List of existing experiences -->
                   {#each $form.experiences as experience, index (experience.id)}
                     <div class="mb-4 p-4 border rounded-md space-y-2">
@@ -348,7 +385,6 @@
 
                           <div class="flex justify-between">
                             <Button type="button" on:click={cancelEdit} color="gray">Cancel</Button>
-
                             <Button type="button" on:click={saveExperience} color="blue">Save Experience</Button>
                           </div>
                         </div>
@@ -363,16 +399,100 @@
                           </div>
                           <Button type="button" class="ml-4" on:click={() => editExperience(experience)}>Edit</Button>
                         </div>
-
                       {/if}
                     </div>
                   {/each}
+                </div>
 
+              {:else if currentStep === 4}
+                <!-- Disabilities Step -->
+                <div class="space-y-6">
+                  <!-- Add new disability button -->
+                  {#if !showDisabilityForm}
+                    <Button type="button" on:click={addNewDisability}>+ Add New Disability</Button>
+                  {/if}
+
+                  <!-- Disability form for adding or editing a disability -->
+                  {#if showDisabilityForm}
+                    <div class="mb-4 p-4 border rounded-md space-y-4">
+                      <div>
+                        <Label for="disability_id">Disability</Label>
+                        <Select.Root on:selectedChange={handleSelectChange}>
+                          <Select.Trigger class="w-[180px]">
+                            <Select.Value placeholder="Select Disability" />
+                          </Select.Trigger>
+                          <Select.Content>
+                            {#each disability_options as disability}
+                              <Select.Item value={disability.id} on:click={() => editingDisability.disability_id = disability.id}>
+                                {disability.name}
+                              </Select.Item>
+                            {/each}
+                          </Select.Content>
+                        </Select.Root>
+                      </div>
+
+                      <div>
+                        <Label for="details">Details</Label>
+                        <Textarea id="details" bind:value={editingDisability.details} placeholder="Details about the disability" />
+                      </div>
+
+                      <div class="flex justify-between">
+                        <Button type="button" on:click={saveDisability} color="blue">Save Disability</Button>
+                        <Button type="button" on:click={cancelEdit} color="gray">Cancel</Button>
+                      </div>
+                    </div>
+                  {/if}
+
+                  <!-- Displaying the Candidate's Disabilities -->
+                  {#each disability_details as disabilityDetail, index (disabilityDetail.id)}
+                    <div class="mb-4 p-4 border rounded-md space-y-2">
+                      {#if editingDisability && editingDisability.id === disabilityDetail.id}
+                        <!-- Disability form for editing -->
+                        <div class="space-y-4">
+                          <div>
+                            <Label for="disability_id">Disability</Label>
+                            <Select.Root on:selectedChange={handleSelectChange}>
+                              <Select.Trigger class="w-[180px]">
+                                <Select.Value placeholder="Select Disability" />
+                              </Select.Trigger>
+                              <Select.Content>
+                                {#each disability_options as disability}
+                                  <Select.Item value={disability.id} on:click={() => editingDisability.disability_id = disability.id}>
+                                    {disability.name}
+                                  </Select.Item>
+                                {/each}
+                              </Select.Content>
+                            </Select.Root>
+                          </div>
+
+                          <div>
+                            <Label for="details">Details</Label>
+                            <Textarea id="details" bind:value={editingDisability.details} placeholder="Details about the disability" />
+                          </div>
+
+                          <div class="flex justify-between">
+                            <Button type="button" on:click={cancelEdit} color="gray">Cancel</Button>
+                            <Button type="button" on:click={saveDisability} color="blue">Save Disability</Button>
+                          </div>
+                        </div>
+                      {:else}
+                        <!-- Display the disability -->
+                        <div class="flex justify-between items-start">
+                          <div>
+                            <h4>{disabilityDetail.disability_name}</h4>
+                            <p>{disabilityDetail.details}</p>
+                            <p></p>
+                          </div>
+                          <Button type="button" class="ml-4" on:click={() => editCandidateDisability(disabilityDetail)}>Edit</Button>
+                        </div>
+                      {/if}
+                    </div>
+                  {/each}
                 </div>
               {/if}
             </div>
             <Card.Footer class="px-0 py-4 border-t">
-              <div class="flex justify-between">
+              <div class="flex justify-between w-full">
                 {#if currentStep > 0}
                   <Button type="button" on:click={goToPreviousStep}>Previous</Button>
                 {/if}

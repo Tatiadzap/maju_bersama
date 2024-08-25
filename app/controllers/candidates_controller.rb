@@ -5,10 +5,10 @@ class CandidatesController < ApplicationController
   before_action :set_disabilities, only: %i[ show edit ]
 
   def show
-    set_disabilities
   end
 
   def edit
+    @disability_options = Disability.all
   end
 
   def update
@@ -38,11 +38,13 @@ class CandidatesController < ApplicationController
   end
 
   def set_disabilities
-    candidate_disabilities = CandidateDisability.includes(:disability).where(candidate: @candidate)
-    @disability_details = candidate_disabilities.map do |cd|
+    @candidate_disabilities = CandidateDisability.includes(:disability).where(candidate: @candidate)
+    @disability_details = @candidate_disabilities.map do |cd|
       {
-        candidate_disability: cd,
-        disability: cd.disability
+        id: cd.id,
+        disability_id: cd.disability_id,
+        details: cd.details,
+        disability_name: cd.disability.name # Including the disability name directly
       }
     end
   end
