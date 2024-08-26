@@ -1,7 +1,7 @@
 databases:
-  - name: maju_bersama_db
-    databaseName: maju_bersama_production
-    user: maju_bersama_user
+  - name: maju_bersama
+    databaseName: maju_bersama
+    user: maju_bersama
     plan: free
 
 services:
